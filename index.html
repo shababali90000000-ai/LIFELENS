@@ -1,0 +1,3760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>LifeLens — Understand Yourself. Improve Yourself. Build Your Future.</title>
+    <meta name="theme-color" content="#0A0C14">
+    <meta name="description" content="LifeLens — a private, on-device life analysis and personal growth studio.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <link rel="apple-touch-icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <link rel="manifest" id="manifestLink">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+    <style>
+        :root {
+            --bg-0: #080a11;
+            --bg-1: #0d1019;
+            --bg-2: #12151f;
+            --surface: rgba(255, 255, 255, .045);
+            --surface-strong: rgba(255, 255, 255, .075);
+            --border: rgba(255, 255, 255, .09);
+            --border-soft: rgba(255, 255, 255, .05);
+            --text-hi: #f3f2ee;
+            --text-mid: #b9b8c4;
+            --text-lo: #82829a;
+            --gold: #d8ab5f;
+            --gold-soft: rgba(216, 171, 95, .16);
+            --indigo: #6b74e8;
+            --indigo-soft: rgba(107, 116, 232, .18);
+            --teal: #59c2b8;
+            --rose: #d97f83;
+            --danger: #e2685f;
+            --ok: #6fbf8f;
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --font-display: 'Fraunces', serif;
+            --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+            --shadow-soft: 0 10px 40px -12px rgba(0, 0, 0, .55);
+            --shadow-lift: 0 20px 60px -15px rgba(0, 0, 0, .65);
+            --dur: .28s;
+            --ease: cubic-bezier(.22, .7, .2, 1);
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        html.reduce-motion * {
+            animation-duration: .001s !important;
+            transition-duration: .001s !important;
+            scroll-behavior: auto !important;
+        }
+        body {
+            font-family: var(--font-body);
+            background:
+                radial-gradient(circle at 15% 0%, rgba(107, 116, 232, .10), transparent 45%),
+                radial-gradient(circle at 90% 15%, rgba(216, 171, 95, .08), transparent 40%),
+                var(--bg-0);
+            color: var(--text-hi);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: var(--font-display);
+            font-weight: 600;
+            letter-spacing: -.01em;
+        }
+        a {
+            color: inherit;
+        }
+        button {
+            font-family: inherit;
+            cursor: pointer;
+        }
+        ::selection {
+            background: var(--gold-soft);
+            color: var(--text-hi);
+        }
+        ::-webkit-scrollbar {
+            width: 9px;
+            height: 9px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, .14);
+            border-radius: 99px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, .24);
+        }
+        :focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 2px;
+            border-radius: 6px;
+        }
+        #particleField {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: .5;
+        }
+        .app-shell {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 264px;
+            flex-shrink: 0;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .015));
+            border-right: 1px solid var(--border-soft);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            padding: 22px 14px;
+            overflow-y: auto;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 6px 10px 22px 10px;
+        }
+        .brand img {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            object-fit: cover;
+            background: var(--surface);
+        }
+        .brand .word {
+            font-family: var(--font-display);
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: .01em;
+        }
+        .brand .word span {
+            color: var(--gold);
+        }
+        .brand .tag {
+            font-size: 10px;
+            color: var(--text-lo);
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            margin-top: 1px;
+        }
+        .nav-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            color: var(--text-mid);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+            border: 1px solid transparent;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+        }
+        .nav-item .ic {
+            width: 20px;
+            text-align: center;
+            font-size: 15px;
+        }
+        .nav-item:hover {
+            background: var(--surface);
+            color: var(--text-hi);
+            transform: translateX(2px);
+        }
+        .nav-item.active {
+            background: var(--gold-soft);
+            color: var(--gold);
+            border-color: rgba(216, 171, 95, .25);
+        }
+        .sidebar-foot {
+            padding: 14px 10px 4px;
+            border-top: 1px solid var(--border-soft);
+            margin-top: 10px;
+        }
+        .xp-mini {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11.5px;
+            color: var(--text-lo);
+            margin-bottom: 6px;
+        }
+        .xp-bar-track {
+            height: 6px;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, .06);
+            overflow: hidden;
+        }
+        .xp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--indigo), var(--gold));
+            width: 0%;
+            transition: width .8s var(--ease);
+        }
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 28px 34px 90px;
+            position: relative;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 26px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .hamburger {
+            display: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--text-hi);
+        }
+        .topbar-title {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 600;
+        }
+        .topbar-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-mid);
+            transition: all var(--dur) var(--ease);
+        }
+        .icon-btn:hover {
+            color: var(--text-hi);
+            border-color: rgba(255, 255, 255, .2);
+            transform: translateY(-2px);
+        }
+        .install-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 16px;
+            border-radius: 99px;
+            background: linear-gradient(135deg, var(--gold), #b98a44);
+            color: #191207;
+            font-weight: 800;
+            font-size: 12.5px;
+            border: none;
+            box-shadow: 0 8px 24px -8px rgba(216, 171, 95, .55);
+        }
+        .install-pill.hidden,
+        .icon-btn.hidden {
+            display: none !important;
+        }
+        .view {
+            display: none;
+            animation: viewIn .45s var(--ease);
+        }
+        .view.active {
+            display: block;
+        }
+        @keyframes viewIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            backdrop-filter: blur(16px);
+            box-shadow: var(--shadow-soft);
+            transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
+        }
+        .card.hoverable:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, .18);
+        }
+        .grid {
+            display: grid;
+            gap: 18px;
+        }
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        @media(max-width:1180px) {
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media(max-width:720px) {
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+        .eyebrow {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: var(--gold);
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .muted {
+            color: var(--text-mid);
+            font-size: 13.5px;
+            line-height: 1.6;
+        }
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .section-sub {
+            color: var(--text-lo);
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13.5px;
+            border: 1px solid transparent;
+            transition: transform var(--dur) var(--ease), filter var(--dur) var(--ease);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--indigo), #4a52c9);
+            color: #fff;
+            box-shadow: 0 10px 30px -10px rgba(107, 116, 232, .6);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), #b98a44);
+            color: #1c1406;
+            box-shadow: 0 10px 30px -10px rgba(216, 171, 95, .55);
+        }
+        .btn-ghost {
+            background: var(--surface);
+            color: var(--text-hi);
+            border-color: var(--border);
+        }
+        .btn-danger {
+            background: rgba(226, 104, 95, .15);
+            color: #f0a19b;
+            border-color: rgba(226, 104, 95, .35);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-block {
+            width: 100%;
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .5);
+            transform: scale(0);
+            animation: rippleAnim .6s var(--ease);
+            pointer-events: none;
+        }
+        @keyframes rippleAnim {
+            to {
+                transform: scale(3.2);
+                opacity: 0;
+            }
+        }
+        input[type=text],
+        input[type=number],
+        input[type=date],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 11px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .03);
+            color: var(--text-hi);
+            font-size: 13.5px;
+            font-family: inherit;
+            transition: border-color var(--dur), background var(--dur);
+        }
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-lo);
+        }
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--indigo);
+            background: rgba(255, 255, 255, .05);
+        }
+        label.field-label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-mid);
+            font-weight: 700;
+            margin: 0 0 6px 2px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+        .field {
+            margin-bottom: 16px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 99px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--text-mid);
+            transition: all var(--dur) var(--ease);
+        }
+        .chip.selectable {
+            cursor: pointer;
+        }
+        .chip.selectable:hover {
+            border-color: rgba(255, 255, 255, .25);
+            color: var(--text-hi);
+        }
+        .chip.selected {
+            background: var(--gold-soft);
+            border-color: rgba(216, 171, 95, .4);
+            color: var(--gold);
+        }
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+        .likert {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+        .likert button {
+            flex: 1;
+            min-width: 54px;
+            padding: 11px 6px;
+            border-radius: 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-mid);
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .likert button.selected {
+            background: var(--indigo-soft);
+            border-color: rgba(107, 116, 232, .5);
+            color: #c7cbff;
+        }
+        .ring-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ring-wrap svg {
+            transform: rotate(-90deg);
+        }
+        .ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, .07);
+        }
+        .ring-fg {
+            fill: none;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.2s var(--ease);
+        }
+        .ring-label {
+            position: absolute;
+            text-align: center;
+        }
+        .ring-label .num {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 700;
+            display: block;
+        }
+        .ring-label .cap {
+            font-size: 9.5px;
+            color: var(--text-lo);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .bar-row .b-label {
+            width: 110px;
+            font-size: 12.5px;
+            color: var(--text-mid);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .bar-track {
+            flex: 1;
+            height: 9px;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, .06);
+            overflow: hidden;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            width: 0%;
+            transition: width 1.1s var(--ease);
+            background: linear-gradient(90deg, var(--indigo), var(--teal));
+        }
+        .bar-val {
+            width: 34px;
+            text-align: right;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-hi);
+            flex-shrink: 0;
+        }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 5, 9, .72);
+            backdrop-filter: blur(6px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.open {
+            display: flex;
+            animation: fadeIn var(--dur) var(--ease);
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .modal {
+            background: var(--bg-1);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            max-width: 560px;
+            width: 100%;
+            max-height: 86vh;
+            overflow-y: auto;
+            padding: 28px;
+            box-shadow: var(--shadow-lift);
+            animation: modalIn .35s var(--ease);
+        }
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(.97);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .modal-close {
+            float: right;
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-mid);
+        }
+        #toastHost {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 400;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 360px;
+        }
+        .toast {
+            background: var(--bg-1);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--indigo);
+            border-radius: 12px;
+            padding: 13px 16px;
+            box-shadow: var(--shadow-lift);
+            animation: toastIn .35s var(--ease);
+            font-size: 13px;
+        }
+        .toast.success {
+            border-left-color: var(--ok);
+        }
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+        .toast .t-title {
+            font-weight: 800;
+            margin-bottom: 2px;
+            font-size: 13px;
+        }
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .toast.leaving {
+            animation: toastOut .3s var(--ease) forwards;
+        }
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+        }
+        #onboarding {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: var(--bg-0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .ob-panel {
+            max-width: 560px;
+            width: 92%;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        .ob-step {
+            display: none;
+        }
+        .ob-step.active {
+            display: block;
+            animation: viewIn .6s var(--ease);
+        }
+        .ob-logo {
+            width: 74px;
+            height: 74px;
+            border-radius: 20px;
+            object-fit: cover;
+            margin: 0 auto 22px;
+            box-shadow: 0 20px 50px -10px rgba(216, 171, 95, .4);
+        }
+        .ob-title {
+            font-family: var(--font-display);
+            font-size: 44px;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            margin-bottom: 10px;
+        }
+        .ob-sub {
+            color: var(--text-mid);
+            font-size: 16px;
+            margin-bottom: 34px;
+            line-height: 1.6;
+        }
+        .ob-dots {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 26px;
+        }
+        .ob-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, .15);
+        }
+        .ob-dots span.active {
+            background: var(--gold);
+            width: 20px;
+        }
+        .hero-card {
+            background: linear-gradient(135deg, rgba(107, 116, 232, .14), rgba(216, 171, 95, .08));
+            border: 1px solid var(--border);
+        }
+        .greeting {
+            font-family: var(--font-display);
+            font-size: 30px;
+            margin-bottom: 6px;
+        }
+        .quote-rotator {
+            font-style: italic;
+            color: var(--text-mid);
+            font-size: 14.5px;
+            margin-top: 8px;
+            min-height: 22px;
+        }
+        .stat-mini {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .stat-mini .val {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 700;
+        }
+        .stat-mini .lbl {
+            font-size: 11px;
+            color: var(--text-lo);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+        .module-tile {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .module-tile .m-ic {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--surface-strong);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .module-tile h3 {
+            font-size: 15px;
+        }
+        .module-tile p {
+            font-size: 12px;
+            color: var(--text-lo);
+            line-height: 1.5;
+        }
+        .radar-wrap {
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .q-progress-track {
+            height: 6px;
+            background: rgba(255, 255, 255, .06);
+            border-radius: 99px;
+            overflow: hidden;
+            margin-bottom: 22px;
+        }
+        .q-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--indigo), var(--gold));
+            width: 0%;
+            transition: width .5s var(--ease);
+        }
+        .q-count {
+            font-size: 11.5px;
+            color: var(--text-lo);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            font-weight: 700;
+        }
+        .q-text {
+            font-size: 18px;
+            margin-bottom: 20px;
+            line-height: 1.45;
+            font-family: var(--font-display);
+        }
+        .ach-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            border-radius: 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+        .ach-card.locked {
+            opacity: .4;
+        }
+        .ach-ic {
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            background: var(--gold-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            flex-shrink: 0;
+        }
+        .player-shell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            padding: 20px 0;
+        }
+        .album-spin {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--indigo), var(--gold), var(--teal), var(--indigo));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 20px 60px -15px rgba(0, 0, 0, .6);
+        }
+        .album-spin::after {
+            content: '';
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--bg-1);
+            position: absolute;
+        }
+        .album-spin.spinning {
+            animation: spinAlbum 8s linear infinite;
+        }
+        @keyframes spinAlbum {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .eq-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 36px;
+            position: relative;
+            z-index: 1;
+        }
+        .eq-bars span {
+            width: 4px;
+            background: linear-gradient(180deg, var(--gold), var(--indigo));
+            border-radius: 2px;
+            height: 20%;
+        }
+        .eq-bars.playing span {
+            animation: eqAnim 1s ease-in-out infinite;
+        }
+        .eq-bars span:nth-child(1) {
+            animation-delay: .0s;
+        }
+        .eq-bars span:nth-child(2) {
+            animation-delay: .15s;
+        }
+        .eq-bars span:nth-child(3) {
+            animation-delay: .3s;
+        }
+        .eq-bars span:nth-child(4) {
+            animation-delay: .1s;
+        }
+        .eq-bars span:nth-child(5) {
+            animation-delay: .25s;
+        }
+        .eq-bars span:nth-child(6) {
+            animation-delay: .05s;
+        }
+        .eq-bars span:nth-child(7) {
+            animation-delay: .2s;
+        }
+        @keyframes eqAnim {
+            0%,
+            100% {
+                height: 20%;
+            }
+            50% {
+                height: 100%;
+            }
+        }
+        .track-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .ctrl-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .ctrl-btn.play {
+            width: 58px;
+            height: 58px;
+            background: linear-gradient(135deg, var(--gold), #b98a44);
+            color: #191207;
+            font-size: 19px;
+        }
+        .seek-track {
+            width: 100%;
+            max-width: 420px;
+        }
+        .playlist-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 14px;
+            border-radius: 11px;
+            background: var(--surface);
+            border: 1px solid transparent;
+            margin-bottom: 7px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .playlist-item.playing {
+            border-color: rgba(216, 171, 95, .4);
+            background: var(--gold-soft);
+            color: var(--gold);
+        }
+        .playlist-item .pl-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+            margin-right: 10px;
+        }
+        .rule-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            border-radius: 13px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            margin-bottom: 9px;
+        }
+        .rule-item .r-num {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--gold);
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        .rule-item .r-text {
+            flex: 1;
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+        .rule-item.pinned {
+            border-color: rgba(216, 171, 95, .4);
+        }
+        .rule-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .rule-actions button {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-mid);
+        }
+        .koshish-hero {
+            text-align: center;
+            padding: 50px 20px;
+            position: relative;
+        }
+        .koshish-quote {
+            font-family: var(--font-display);
+            font-size: 28px;
+            line-height: 1.5;
+            max-width: 680px;
+            margin: 0 auto 24px;
+            font-style: italic;
+        }
+        .signature {
+            font-family: var(--font-display);
+            font-size: 22px;
+            color: var(--gold);
+            font-style: italic;
+            margin-top: 30px;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 26px;
+            border-left: 2px solid var(--border);
+        }
+        .tl-item {
+            position: relative;
+            padding-bottom: 22px;
+        }
+        .tl-item::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 2px;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 0 4px var(--gold-soft);
+        }
+        .tl-item h4 {
+            font-size: 14.5px;
+            margin-bottom: 4px;
+        }
+        .sw-card {
+            padding: 18px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+        }
+        .sw-card.strength {
+            border-left: 3px solid var(--ok);
+        }
+        .sw-card.growth {
+            border-left: 3px solid var(--gold);
+        }
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 150;
+            background: rgba(13, 16, 25, .92);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-soft);
+            padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+            overflow-x: auto;
+        }
+        .bottom-nav-inner {
+            display: flex;
+            gap: 2px;
+        }
+        .bn-item {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 7px 12px;
+            border-radius: 12px;
+            background: none;
+            border: none;
+            color: var(--text-lo);
+            font-size: 9.5px;
+            font-weight: 700;
+        }
+        .bn-item.active {
+            color: var(--gold);
+        }
+        .bn-item .ic {
+            font-size: 17px;
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            z-index: 99;
+        }
+        .sidebar-overlay.open {
+            display: block;
+        }
+        @media(max-width:980px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                z-index: 100;
+                transform: translateX(-100%);
+                transition: transform var(--dur) var(--ease);
+                box-shadow: var(--shadow-lift);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .hamburger {
+                display: flex;
+            }
+            .main {
+                padding: 18px 16px 100px;
+            }
+            .bottom-nav {
+                display: block;
+            }
+            .topbar-title {
+                font-size: 21px;
+            }
+        }
+        @media(max-width:520px) {
+            .ob-title {
+                font-size: 32px;
+            }
+            .modal {
+                padding: 20px;
+            }
+        }
+        .print-only {
+            display: none;
+        }
+        @media print {
+            .sidebar,
+            .topbar,
+            .bottom-nav,
+            #toastHost,
+            .hamburger,
+            #particleField,
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: #fff;
+                color: #000;
+            }
+            .card {
+                background: #fff;
+                border: 1px solid #ccc;
+                box-shadow: none;
+            }
+            .print-only {
+                display: block;
+            }
+        }
+        .badge-installed {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 99px;
+            background: rgba(111, 191, 143, .15);
+            border: 1px solid rgba(111, 191, 143, .35);
+            color: var(--ok);
+            font-size: 11.5px;
+            font-weight: 800;
+        }
+        .divider {
+            height: 1px;
+            background: var(--border-soft);
+            margin: 18px 0;
+        }
+        .small-note {
+            font-size: 11.5px;
+            color: var(--text-lo);
+            line-height: 1.6;
+        }
+        .result-explain {
+            background: rgba(255, 255, 255, .03);
+            border-left: 3px solid var(--indigo);
+            padding: 14px 16px;
+            border-radius: 0 12px 12px 0;
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: var(--text-mid);
+            margin: 14px 0;
+        }
+        .step-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 22px;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleField"></canvas>
+    <div id="toastHost" aria-live="polite"></div>
+
+    <!-- ONBOARDING -->
+    <div id="onboarding">
+        <canvas id="obParticles" style="position:absolute;inset:0;"></canvas>
+        <div class="ob-panel">
+            <div class="ob-step active" data-step="0">
+                <div class="ob-logo" style="font-size:60px;display:flex;align-items:center;justify-content:center;">🔍</div>
+                <div class="ob-title">LIFE<span style="color:var(--gold)">LENS</span></div>
+                <div class="ob-sub">Understand Yourself. Improve Yourself.<br>Build Your Future.</div>
+                <button class="btn btn-gold" onclick="obGoto(1)">Begin Your Journey →</button>
+            </div>
+            <div class="ob-step" data-step="1">
+                <h2 class="ob-title" style="font-size:30px;">What should we call you?</h2>
+                <p class="ob-sub">This stays on your device — nowhere else.</p>
+                <div class="field" style="max-width:340px;margin:0 auto 22px;">
+                    <input type="text" id="obName" placeholder="Your name" maxlength="30">
+                </div>
+                <button class="btn btn-gold" onclick="obSubmitName()">Continue →</button>
+            </div>
+            <div class="ob-step" data-step="2">
+                <h2 class="ob-title" style="font-size:28px;">What would you like to explore first?</h2>
+                <div class="chip-row" style="justify-content:center;max-width:480px;margin:0 auto 26px;" id="obFocusRow">
+                    <button class="chip selectable" data-v="life">My Life</button>
+                    <button class="chip selectable" data-v="personality">My Personality</button>
+                    <button class="chip selectable" data-v="career">My Career</button>
+                    <button class="chip selectable" data-v="goals">My Goals</button>
+                    <button class="chip selectable" data-v="money">My Money</button>
+                    <button class="chip selectable" data-v="study">My Studies</button>
+                    <button class="chip selectable" data-v="mind">My Mind</button>
+                    <button class="chip selectable" data-v="all">Explore Everything</button>
+                </div>
+                <button class="btn btn-gold" onclick="obFinish()">Enter LifeLens →</button>
+            </div>
+            <div class="ob-dots">
+                <span class="active" data-d="0"></span><span data-d="1"></span><span data-d="2"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- INSTALL MODAL -->
+    <div class="modal-overlay" id="installModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('installModal')">✕</button>
+            <h2 class="section-title">Install LifeLens</h2>
+            <p class="muted" style="margin:10px 0 18px;">Add LifeLens to your home screen so it opens like a real app — full screen, its own icon, works
+                offline.</p>
+            <div class="card" style="background:rgba(255,255,255,.03);margin-bottom:18px;">
+                <strong style="font-size:13px;">🔒 Allow local storage for your private data</strong>
+                <p class="muted" style="margin-top:6px;">Everything you enter — your reflections, goals, results — is written straight to this device's
+                    storage, never to a server.</p>
+            </div>
+            <button class="btn btn-gold btn-block" onclick="triggerInstall()">Install App & Allow Local Storage</button>
+            <button class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="closeModal('installModal')">Maybe later</button>
+        </div>
+    </div>
+
+    <!-- APP SHELL -->
+    <div class="app-shell" id="appShell" style="display:none;">
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <div style="font-size:30px;">🔍</div>
+                <div>
+                    <div class="word">Life<span>Lens</span></div>
+                    <div class="tag">Personal OS</div>
+                </div>
+            </div>
+            <nav class="nav-group" id="navGroup"></nav>
+            <div class="sidebar-foot">
+                <div class="xp-mini"><span id="sbLevel">Level 1 — Explorer</span><span id="sbXp">0 XP</span></div>
+                <div class="xp-bar-track"><div class="xp-bar-fill" id="sbXpFill"></div></div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <div class="topbar">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <button class="hamburger" onclick="toggleSidebar(true)" aria-label="Open menu">☰</button>
+                    <div class="topbar-title" id="viewTitle">Dashboard</div>
+                </div>
+                <div class="topbar-actions">
+                    <button class="install-pill hidden" id="installBtn" onclick="openModal('installModal')">⤓ Install App</button>
+                    <span class="badge-installed hidden" id="installedBadge">✓ Installed</span>
+                    <button class="icon-btn" title="Reduce motion" onclick="toggleMotion()">🌀</button>
+                    <button class="icon-btn" title="Settings" onclick="navigateTo('settings')">⚙️</button>
+                </div>
+            </div>
+
+            <!-- DASHBOARD -->
+            <section class="view active" id="view-dashboard" data-title="Dashboard">
+                <div class="card hero-card" style="margin-bottom:20px;">
+                    <div class="eyebrow">Welcome back</div>
+                    <div class="greeting" id="greetingText">Good day 👋</div>
+                    <div class="quote-rotator" id="quoteRotator"></div>
+                    <div class="divider"></div>
+                    <div class="grid grid-4">
+                        <div class="stat-mini"><span class="val" id="statOverview">—</span><span class="lbl">Life Overview</span></div>
+                        <div class="stat-mini"><span class="val" id="statLevel">1</span><span class="lbl">Current Level</span></div>
+                        <div class="stat-mini"><span class="val" id="statXp">0</span><span class="lbl">Growth Points</span></div>
+                        <div class="stat-mini"><span class="val" id="statAssess">0</span><span class="lbl">Assessments Done</span></div>
+                    </div>
+                </div>
+                <div class="grid grid-2" style="margin-bottom:20px;">
+                    <div class="card">
+                        <div class="eyebrow">Life Snapshot</div>
+                        <div class="section-sub">Self-reflection indicators, updated as you complete each module.</div>
+                        <div class="radar-wrap"><svg id="dashRadar" width="320" height="320" viewBox="0 0 320 320"></svg></div>
+                    </div>
+                    <div class="card">
+                        <div class="eyebrow">Today</div>
+                        <div class="section-sub">A quick read on where things stand.</div>
+                        <div id="dashSummaryList" style="display:flex;flex-direction:column;gap:12px;"></div>
+                    </div>
+                </div>
+                <div class="section-title" style="margin-bottom:14px;">Explore a module</div>
+                <div class="grid grid-4" id="moduleGrid"></div>
+            </section>
+
+            <!-- LIFE ANALYSIS -->
+            <section class="view" id="view-life" data-title="Life Analysis">
+                <div id="lifeIntro" class="card">
+                    <div class="eyebrow">Life Analysis</div>
+                    <h2 class="section-title">How is your life going, right now?</h2>
+                    <p class="muted" style="margin-bottom:18px;">A set of honest questions across eight areas of life. This produces a self-reflection profile,
+                        not a clinical diagnosis.</p>
+                    <button class="btn btn-gold" onclick="startQuiz('life')">Begin Life Analysis →</button>
+                    <div id="lifeHistoryBox" style="margin-top:22px;"></div>
+                </div>
+                <div id="lifeQuizArea" style="display:none;"></div>
+                <div id="lifeResultArea" style="display:none;"></div>
+            </section>
+
+            <!-- MONEY SAVER -->
+            <section class="view" id="view-money" data-title="Money Saver">
+                <div class="grid grid-2">
+                    <div class="card">
+                        <div class="eyebrow">Money Saver</div>
+                        <h2 class="section-title">Build your savings plan</h2>
+                        <div class="field"><label class="field-label">Monthly income / allowance</label><input type="number" id="mIncome"
+                            placeholder="e.g. 40000"></div>
+                        <div class="field"><label class="field-label">Fixed expenses (rent, bills, etc.)</label><input type="number" id="mFixed"
+                            placeholder="e.g. 12000"></div>
+                        <div class="field"><label class="field-label">Variable expenses (food, travel, etc.)</label><input type="number" id="mVar"
+                            placeholder="e.g. 8000"></div>
+                        <div class="field"><label class="field-label">Current savings</label><input type="number" id="mCurrent" placeholder="e.g. 5000">
+                    </div>
+                    <div class="field"><label class="field-label">Savings goal</label><input type="number" id="mGoal" placeholder="e.g. 50000"></div>
+                    <div class="field"><label class="field-label">Target date</label><input type="date" id="mDate"></div>
+                    <button class="btn btn-gold btn-block" onclick="calcMoney()">Build My Plan</button>
+                </div>
+                <div class="card" id="moneyResultCard" style="display:none;"></div>
+            </div>
+            <div class="card" style="margin-top:18px;" id="moneyPlansCard" style="display:none;"></div>
+        </section>
+
+        <!-- MY MUSIC -->
+        <section class="view" id="view-music" data-title="My Music">
+            <div class="card">
+                <div class="eyebrow">My Music</div>
+                <h2 class="section-title">Your local player</h2>
+                <p class="muted" style="margin-bottom:16px;">Your music stays on your device. Nothing is uploaded — files are read straight from your
+                    folders.</p>
+                <input type="file" id="musicInput" accept="audio/*" multiple style="margin-bottom:18px;">
+                <div class="player-shell">
+                    <div class="album-spin" id="albumSpin"><div class="eq-bars" id="eqBars"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+                    <div style="text-align:center;">
+                        <div id="npTitle" style="font-weight:800;font-size:15px;">No track loaded</div>
+                        <div id="npMeta" class="muted" style="font-size:12px;">Choose files to start</div>
+                    </div>
+                    <input type="range" id="seekBar" class="seek-track" value="0" min="0" max="100" step="0.1">
+                    <div style="display:flex;justify-content:space-between;width:100%;max-width:420px;font-size:11px;color:var(--text-lo);">
+                        <span id="curTime">0:00</span><span id="durTime">0:00</span>
+                    </div>
+                    <div class="track-controls">
+                        <button class="ctrl-btn" onclick="musicShuffleToggle()" id="shuffleBtn" title="Shuffle">🔀</button>
+                        <button class="ctrl-btn" onclick="musicPrev()" title="Previous">⏮</button>
+                        <button class="ctrl-btn play" onclick="musicToggle()" id="playBtn" title="Play/Pause">▶</button>
+                        <button class="ctrl-btn" onclick="musicNext()" title="Next">⏭</button>
+                        <button class="ctrl-btn" onclick="musicRepeatToggle()" id="repeatBtn" title="Repeat">🔁</button>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;width:100%;max-width:260px;">
+                        <span style="font-size:13px;">🔈</span>
+                        <input type="range" id="volBar" min="0" max="1" step="0.01" value="0.8" style="width:100%;">
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <input type="text" id="playlistSearch" placeholder="Search playlist…" style="margin-bottom:12px;">
+                <div id="playlistBox"></div>
+            </div>
+        </section>
+
+        <!-- WELLNESS -->
+        <section class="view" id="view-wellness" data-title="Wellness Planner">
+            <div id="wellnessForm" class="card">
+                <div class="eyebrow">Wellness Planner</div>
+                <h2 class="section-title">A general, healthy routine — built around you</h2>
+                <p class="muted" style="margin-bottom:16px;">This gives general lifestyle suggestions, not medical treatment.</p>
+                <div class="field"><label class="field-label">Age group</label>
+                    <div class="chip-row" data-group="wAge"><button class="chip selectable" data-v="teen">Under 18</button><button class="chip selectable"
+                        data-v="young">18–25</button><button class="chip selectable" data-v="adult">26–45</button><button class="chip selectable"
+                    data-v="older">46+</button></div></div>
+                <div class="field"><label class="field-label">Main goal</label>
+                    <div class="chip-row" data-group="wGoal"><button class="chip selectable" data-v="routine">Better daily routine</button><button
+                        class="chip selectable" data-v="fitness">General fitness</button><button class="chip selectable" data-v="energy">More
+                    energy</button><button class="chip selectable" data-v="sleep">Better sleep</button><button class="chip selectable"
+                data-v="strength">Build strength</button></div></div>
+            <div class="field"><label class="field-label">Current activity level</label>
+                <div class="chip-row" data-group="wActivity"><button class="chip selectable" data-v="low">Mostly sedentary</button><button
+                    class="chip selectable" data-v="mid">Somewhat active</button><button class="chip selectable" data-v="high">Very
+            active</button></div></div>
+        <div class="field"><label class="field-label">Typical sleep hours</label>
+            <div class="chip-row" data-group="wSleep"><button class="chip selectable" data-v="low">Under 6h</button><button class="chip selectable"
+                data-v="mid">6–8h</button><button class="chip selectable" data-v="good">8h+</button></div></div>
+    <div class="field"><label class="field-label">Time available per day</label>
+        <div class="chip-row" data-group="wTime"><button class="chip selectable" data-v="15">~15 min</button><button class="chip selectable"
+            data-v="30">~30 min</button><button class="chip selectable" data-v="60">45–60 min</button></div></div>
+    <button class="btn btn-gold" onclick="genWellness()">Generate My Routine</button>
+</div>
+<div id="wellnessResult" style="display:none;"></div>
+</section>
+
+<!-- PERSONALITY -->
+<section class="view" id="view-personality" data-title="Personality Explorer">
+    <div class="card" id="personalityIntro">
+        <div class="eyebrow">Personality Explorer</div>
+        <h2 class="section-title">An evidence-informed personality exploration</h2>
+        <p class="muted" style="margin-bottom:18px;">Built around five broad, well-studied personality dimensions. This is a self-report exploration, not a
+            clinical diagnosis.</p>
+        <button class="btn btn-gold" onclick="startQuiz('personality')">Start Personality Exploration →</button>
+    </div>
+    <div id="personalityQuizArea" style="display:none;"></div>
+    <div id="personalityResultArea" style="display:none;"></div>
+</section>
+
+<!-- CAREER -->
+<section class="view" id="view-career" data-title="Career Compass">
+    <div class="card" id="careerIntro">
+        <div class="eyebrow">Career Compass</div>
+        <h2 class="section-title">Where do your interests currently point?</h2>
+        <p class="muted" style="margin-bottom:18px;">Answers about interests, work style, skills and motivation — used to map you toward career clusters
+            worth exploring.</p>
+        <button class="btn btn-gold" onclick="startQuiz('career')">Start Career Compass →</button>
+    </div>
+    <div id="careerQuizArea" style="display:none;"></div>
+    <div id="careerResultArea" style="display:none;"></div>
+</section>
+
+<!-- GOAL ROADMAP -->
+<section class="view" id="view-goals" data-title="Goal Roadmap">
+    <div class="card" id="goalForm">
+        <div class="eyebrow">Goal Roadmap</div>
+        <h2 class="section-title">Turn one goal into a working plan</h2>
+        <div class="field"><label class="field-label">My goal</label><input type="text" id="gGoal"
+        placeholder="e.g. I want to become a web developer"></div>
+        <div class="grid grid-2">
+            <div class="field"><label class="field-label">Why do you want this?</label><textarea id="gWhy" placeholder="Your reason…"></textarea>
+        </div>
+        <div class="field"><label class="field-label">Current level</label>
+            <div class="chip-row" data-group="gLevel"><button class="chip selectable" data-v="beginner">Beginner</button><button
+                class="chip selectable" data-v="some">Some experience</button><button class="chip selectable"
+        data-v="intermediate">Intermediate</button></div></div>
+    <div class="field"><label class="field-label">Time available per day</label>
+        <div class="chip-row" data-group="gTime"><button class="chip selectable" data-v="30">~30 min</button><button class="chip selectable"
+            data-v="60">~1 hour</button><button class="chip selectable" data-v="120">2+ hours</button></div></div>
+    <div class="field"><label class="field-label">Deadline</label><input type="date" id="gDeadline"></div>
+    <div class="field"><label class="field-label">Biggest obstacle</label><input type="text" id="gObstacle"
+    placeholder="e.g. staying consistent"></div>
+    <div class="field"><label class="field-label">What usually makes you quit?</label><input type="text" id="gQuit"
+    placeholder="e.g. losing motivation after a slow week"></div>
+</div>
+<button class="btn btn-gold" onclick="genRoadmap()">Build My Roadmap</button>
+</div>
+<div id="goalResult" style="display:none;"></div>
+</section>
+
+<!-- LIFE ADVISORY -->
+<section class="view" id="view-advisory" data-title="Life Advisory">
+    <div class="card" id="advisoryPick">
+        <div class="eyebrow">Life Advisory</div>
+        <h2 class="section-title">What's on your mind right now?</h2>
+        <p class="muted" style="margin:8px 0 18px;">Pick what fits closest. This offers grounded, practical guidance — it does not diagnose or treat any
+            condition.</p>
+        <div class="chip-row" id="advisoryTopics"></div>
+        <div class="field" style="margin-top:18px;"><label class="field-label">Add a little context (optional)</label><textarea id="advContext"
+        placeholder="What's been happening?"></textarea></div>
+    <button class="btn btn-gold" onclick="genAdvisory()">Get Guidance</button>
+</div>
+<div id="advisoryResult" style="display:none;"></div>
+</section>
+
+<!-- STUDY PLANNER -->
+<section class="view" id="view-study" data-title="Study Planner">
+    <div class="card">
+        <div class="eyebrow">Study Planner</div>
+        <h2 class="section-title">Turn your marks into a roadmap</h2>
+        <div class="grid grid-2">
+            <div class="field"><label class="field-label">Target overall %</label><input type="number" id="sTarget" placeholder="e.g. 85"></div>
+            <div class="field"><label class="field-label">Exam date</label><input type="date" id="sDate"></div>
+        </div>
+        <div id="subjectRows"></div>
+        <button class="btn btn-ghost" onclick="addSubjectRow()" style="margin-bottom:16px;">+ Add subject</button>
+        <button class="btn btn-gold btn-block" onclick="genStudyPlan()">Build Study Roadmap</button>
+    </div>
+    <div id="studyResult" style="display:none;margin-top:18px;"></div>
+</section>
+
+<!-- ISLAMIC KNOWLEDGE -->
+<section class="view" id="view-islamic" data-title="Islamic Knowledge">
+    <div class="card" id="islamicIntro">
+        <div class="eyebrow">Islamic Knowledge Center</div>
+        <h2 class="section-title">Test and build your knowledge</h2>
+        <p class="muted" style="margin-bottom:18px;">Covers the Quran, Seerah, the Prophets, Salah, Fasting, Zakat, Hajj and Islamic history.</p>
+        <button class="btn btn-gold" onclick="startQuiz('islamic')">Start Knowledge Test →</button>
+    </div>
+    <div id="islamicQuizArea" style="display:none;"></div>
+    <div id="islamicResultArea" style="display:none;"></div>
+</section>
+
+<!-- COGNITIVE -->
+<section class="view" id="view-cognitive" data-title="Cognitive Challenge">
+    <div class="card" id="cognitiveIntro">
+        <div class="eyebrow">Cognitive Challenge</div>
+        <h2 class="section-title">A reasoning challenge across verbal, numerical, logical & visual puzzles</h2>
+        <p class="muted" style="margin-bottom:18px;">This measures your performance on this particular browser challenge only — not a certified IQ score.
+        </p>
+        <div class="field"><label class="field-label">Difficulty</label>
+            <div class="chip-row" data-group="cogDiff"><button class="chip selectable selected" data-v="mixed">Mixed
+            (recommended)</button><button class="chip selectable" data-v="easy">Easier</button><button class="chip selectable"
+        data-v="hard">Harder</button></div></div>
+    <button class="btn btn-gold" onclick="startQuiz('cognitive')">Begin Challenge →</button>
+</div>
+<div id="cognitiveQuizArea" style="display:none;"></div>
+<div id="cognitiveResultArea" style="display:none;"></div>
+</section>
+
+<!-- STRENGTHS & WEAKNESSES -->
+<section class="view" id="view-strengths" data-title="Strengths & Weaknesses">
+    <div class="card">
+        <div class="eyebrow">Strengths & Development Areas</div>
+        <h2 class="section-title">Pulled together from everything you've completed</h2>
+        <p class="muted" style="margin-bottom:8px;">Complete more modules (Life Analysis, Personality, Career, Cognitive) to sharpen this picture.</p>
+    </div>
+    <div id="swContent" class="grid grid-2" style="margin-top:18px;"></div>
+</section>
+
+<!-- YOUR LIFE, YOUR RULES -->
+<section class="view" id="view-rules" data-title="Your Life, Your Rules">
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="eyebrow">Your Life, Your Rules</div>
+            <h2 class="section-title">Write the principles you live by</h2>
+            <div class="field"><input type="text" id="ruleInput" placeholder="e.g. I will keep learning."></div>
+            <button class="btn btn-gold btn-block" onclick="addRule()">Add Rule</button>
+            <div class="divider"></div>
+            <button class="btn btn-ghost btn-block" onclick="buildPersonalCode()">Build My Personal Code</button>
+        </div>
+        <div class="card">
+            <h3 class="section-title" style="font-size:16px;">My Rules</h3>
+            <div id="rulesList"></div>
+        </div>
+    </div>
+    <div id="personalCodeResult" style="display:none;margin-top:18px;"></div>
+</section>
+
+<!-- KOSHISH -->
+<section class="view" id="view-koshish" data-title="Koshish">
+    <div class="card koshish-hero">
+        <div class="eyebrow">A message from Shabab Ali</div>
+        <h1 style="font-family:var(--font-display);font-size:52px;letter-spacing:.02em;margin-bottom:6px;">KOSHISH</h1>
+        <p class="muted" style="font-size:15px;margin-bottom:30px;">Try. Learn. Rise. Try Again.</p>
+        <p class="koshish-quote">"Koshish karne walon ko afsos nahi hota" doesn't mean everyone who tries automatically wins.</p>
+        <div style="max-width:640px;margin:0 auto;text-align:left;" class="muted">
+            <p style="margin-bottom:14px;">Failure can happen even after sincere effort. Success was never fully within human control — and that isn't a
+                discouraging thought, it's a freeing one.</p>
+            <p style="margin-bottom:14px;">But that freedom only applies <em>after</em> the sincere effort — not instead of it.</p>
+            <p style="margin-bottom:14px;">So the discipline is this: give the effort, keep the patience, hold the faith, do the best possible amount of
+            work you're capable of today — and then let the result be what it will be.</p>
+        </div>
+        <p class="koshish-quote" style="font-size:19px;margin-top:30px;">"Kamyabi aur nakaami Allah ke ikhtiyar mein hain; meri zimmedari sincere koshish,
+        sabr, dua aur behtareen amal hai."</p>
+    <div class="result-explain" style="max-width:640px;margin:24px auto;text-align:left;">You may lose after trying. You may fall after giving your best.
+    But sincere effort gives you something failure cannot take away: experience, character, and the knowledge that you did not simply surrender.</div>
+<div class="signature">— Shabab Ali</div>
+</div>
+</section>
+
+<!-- ABOUT -->
+<section class="view" id="view-about" data-title="About Shabab Ali">
+    <div class="card" style="margin-bottom:18px;">
+        <div class="eyebrow">Who is Shabab Ali?</div>
+        <h2 class="section-title">Creator of LifeLens & College Times 2025</h2>
+        <p class="muted">Shabab Ali is a tech enthusiast, web developer, and the creator of College Times 2025. He completed his ICS (Physics) batch
+            (2023–2025) from F.G. Public School and College (R.D. Mona).</p>
+    </div>
+    <div class="grid grid-2" style="margin-bottom:18px;">
+        <div class="card">
+            <h3 class="section-title" style="font-size:16px;">Professional Profile</h3>
+            <p class="muted">My name is Shabab Ali. I am a dedicated, goal-driven individual and a lifelong learner who thrives on tackling complex
+                challenges and turning every obstacle into a valuable lesson.</p>
+            <p class="muted" style="margin-top:10px;">My character is defined by structure, visionary thinking, and an unyielding spirit that refuses to
+            surrender in the face of adversity.</p>
+        </div>
+        <div class="card">
+            <h3 class="section-title" style="font-size:16px;">The Cheetah's Leap</h3>
+            <p class="muted">"Stepping back is never a downfall; it is essential preparation for an extraordinary victory."</p>
+            <p class="muted" style="margin-top:10px;">Sometimes progress means stepping back on purpose — recalibrating, learning from a mistake,
+            rebuilding strength — before moving forward with far more preparation than before.</p>
+        </div>
+    </div>
+    <div class="card" style="margin-bottom:18px;">
+        <h3 class="section-title" style="font-size:16px;">Journey</h3>
+        <div class="timeline">
+            <div class="tl-item"><h4>🎓 Academic Journey & Technical Aptitude</h4><p class="muted">BS Computer Science · Programming · Data Structures
+            · Artificial Intelligence · Algorithmic Logic · Web Development.</p></div>
+        <div class="tl-item"><h4>🏫 Role as an Educator</h4><p class="muted">Teaching · Leadership · Patience · Classroom Management · Communication ·
+        Empathy · Mentoring.</p></div>
+    <div class="tl-item"><h4>🎯 Higher Purpose & Aspiration</h4><p class="muted">A personal aspiration and long-term goal: to serve the nation through
+    commissioned military service.</p></div>
+</div>
+</div>
+<div class="grid grid-2" style="margin-bottom:18px;">
+    <div class="card">
+        <h3 class="section-title" style="font-size:16px;">Core Strengths</h3>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+            <div class="chip">🧗 Resilience & Mental Toughness</div>
+            <div class="chip">🧮 Analytical & Logical Problem-Solving</div>
+            <div class="chip">🏫 Leadership & Classroom Management</div>
+            <div class="chip">🔀 Adaptability & Multitasking</div>
+            <div class="chip">📈 Commitment to Continuous Improvement</div>
+        </div>
+    </div>
+    <div class="card">
+        <h3 class="section-title" style="font-size:16px;">Key Skills</h3>
+        <div class="chip-row">
+            <span class="chip">💻 Programming</span><span class="chip">🧠 Data Structures</span><span class="chip">🤖 AI</span><span
+            class="chip">🔍 Algorithmic Logic</span><span class="chip">🏫 Classroom Management</span><span class="chip">🎯
+        Leadership</span><span class="chip">⏳ Time Management</span><span class="chip">💪 Mental Toughness</span><span class="chip">🌐 Web
+    Development</span><span class="chip">📚 Lifelong Learning</span></div>
+</div>
+</div>
+<div class="card">
+    <h3 class="section-title" style="font-size:16px;">Future Outlook</h3>
+    <p class="muted">Shabab Ali continues to build at the intersection of education and technology — deepening his technical foundation in Computer
+    Science while preparing, with discipline and patience, for the long-term goals he has set for himself.</p>
+</div>
+</section>
+
+<!-- SETTINGS -->
+<section class="view" id="view-settings" data-title="Settings">
+    <div class="grid grid-2">
+        <div class="card">
+            <h3 class="section-title" style="font-size:16px;">Profile</h3>
+            <div class="field"><label class="field-label">Your name</label><input type="text" id="settingsName"></div>
+            <button class="btn btn-gold" onclick="saveProfile()">Save</button>
+        </div>
+        <div class="card">
+            <h3 class="section-title" style="font-size:16px;">Appearance</h3>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                <span class="muted">Reduce motion</span>
+                <button class="btn btn-ghost" id="motionToggleBtn" onclick="toggleMotion()">Off</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span class="muted">App installed</span>
+                <span id="settingsInstallState" class="muted">Not installed</span>
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-2" style="margin-top:18px;">
+        <div class="card">
+            <h3 class="section-title" style="font-size:16px;">Your Data</h3>
+            <p class="muted" style="margin-bottom:16px;">Everything in LifeLens is stored locally in this browser's storage on this device — never sent
+            to a server.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-gold" onclick="exportData()">⬇ Export My Data</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">⬆ Import My Data</button>
+            <input type="file" id="importFile" accept=".json" style="display:none;">
+            <button class="btn btn-danger" onclick="openModal('resetModal')">Reset All Data</button>
+        </div>
+    </div>
+    <div class="card">
+        <h3 class="section-title" style="font-size:16px;">Print / Share</h3>
+        <p class="muted" style="margin-bottom:16px;">Print a report of your latest results using your browser's print dialog.</p>
+        <button class="btn btn-ghost" onclick="window.print()">🖨 Print Report</button>
+    </div>
+</div>
+<div class="card" style="margin-top:18px;">
+    <h3 class="section-title" style="font-size:16px;">Gamification</h3>
+    <div class="grid grid-4" id="achGrid" style="margin-top:6px;"></div>
+</div>
+</section>
+</main>
+</div>
+
+<div class="modal-overlay" id="resetModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('resetModal')">✕</button>
+        <h2 class="section-title">Reset all data?</h2>
+        <p class="muted" style="margin:12px 0 20px;">This permanently deletes every result, goal, plan, and rule stored on this device. This cannot be
+            undone unless you have an exported backup.</p>
+        <div style="display:flex;gap:10px;">
+            <button class="btn btn-danger btn-block" onclick="resetAllData()">Yes, delete everything</button>
+            <button class="btn btn-ghost btn-block" onclick="closeModal('resetModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<nav class="bottom-nav">
+    <div class="bottom-nav-inner" id="bottomNavInner"></div>
+</nav>
+
+<script>
+    (function() {
+        // ===============================
+        // STATE / STORAGE ENGINE
+        // ===============================
+        const LS_KEY = 'lifelens_data_v1';
+        const DEFAULT_STATE = {
+            onboarded: false,
+            name: '',
+            focus: '',
+            xp: 0,
+            level: 1,
+            achievements: [],
+            reduceMotion: false,
+            lifeHistory: [],
+            personalityHistory: [],
+            careerHistory: [],
+            islamicHistory: [],
+            cognitiveHistory: [],
+            moneyPlan: null,
+            wellnessPlan: null,
+            goalPlan: null,
+            studyPlan: null,
+            advisoryHistory: [],
+            rules: [
+                { id: 1, text: 'I will respect people even when I disagree.', pinned: false },
+                { id: 2, text: 'I will not let failure define me.', pinned: false },
+                { id: 3, text: 'I will keep learning.', pinned: false },
+                { id: 4, text: 'I will protect my time.', pinned: false },
+                { id: 5, text: 'I will be honest.', pinned: false }
+            ],
+            personalCode: null,
+            installed: false
+        };
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(LS_KEY);
+                if (!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+                const parsed = JSON.parse(raw);
+                return Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), parsed);
+            } catch (e) {
+                console.error('LifeLens: could not read local storage', e);
+                return JSON.parse(JSON.stringify(DEFAULT_STATE));
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(LS_KEY, JSON.stringify(STATE));
+            } catch (e) {
+                console.error('LifeLens: could not write local storage', e);
+                showToast('Storage issue',
+                    'Your device storage may be full or restricted — your last change may not be saved.', 'error');
+            }
+        }
+        let STATE = loadState();
+
+        // ===============================
+        // TOAST NOTIFICATIONS
+        // ===============================
+        function showToast(title, msg, type) {
+            type = type || 'info';
+            const host = document.getElementById('toastHost');
+            const el = document.createElement('div');
+            el.className = 'toast ' + type;
+            el.innerHTML = '<div class="t-title">' + title + '</div><div>' + msg + '</div>';
+            host.appendChild(el);
+            setTimeout(function() { el.classList.add('leaving');
+                setTimeout(function() { el.remove(); }, 320); }, 3800);
+        }
+
+        // ===============================
+        // MODALS
+        // ===============================
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+        document.querySelectorAll('.modal-overlay').forEach(function(m) {
+            m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
+        });
+
+        // ===============================
+        // RIPPLE EFFECT
+        // ===============================
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn, .ctrl-btn, .icon-btn, .install-pill');
+            if (!btn) return;
+            const rect = btn.getBoundingClientRect();
+            const r = document.createElement('span');
+            r.className = 'ripple';
+            const size = Math.max(rect.width, rect.height);
+            r.style.width = r.style.height = size + 'px';
+            r.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            r.style.top = (e.clientY - rect.top - size / 2) + 'px';
+            btn.style.position = btn.style.position || 'relative';
+            btn.style.overflow = 'hidden';
+            btn.appendChild(r);
+            setTimeout(function() { r.remove(); }, 650);
+        });
+
+        // ===============================
+        // PARTICLE BACKGROUND
+        // ===============================
+        function initParticles(canvasId, opts) {
+            opts = opts || {};
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            const density = opts.density || 55;
+
+            function resize() {
+                canvas.width = canvas.offsetWidth || window.innerWidth;
+                canvas.height = canvas.offsetHeight || window.innerHeight;
+            }
+
+            function init() {
+                resize();
+                particles = Array.from({ length: density }, function() {
+                    return {
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        r: Math.random() * 1.6 + 0.4,
+                        vx: (Math.random() - 0.5) * 0.15,
+                        vy: (Math.random() - 0.5) * 0.15,
+                        hue: Math.random() > 0.5 ? '216,171,95' : '107,116,232'
+                    };
+                });
+            }
+
+            function tick() {
+                if (document.documentElement.classList.contains('reduce-motion')) { requestAnimationFrame(
+                    tick); return; }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(function(p) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.y > canvas.height) p.y = 0;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, 7);
+                    ctx.fillStyle = 'rgba(' + p.hue + ',.5)';
+                    ctx.fill();
+                });
+                requestAnimationFrame(tick);
+            }
+            window.addEventListener('resize', resize);
+            init();
+            tick();
+        }
+        initParticles('particleField', { density: 60 });
+        initParticles('obParticles', { density: 40 });
+
+        // ===============================
+        // ONBOARDING FLOW
+        // ===============================
+        let obTempFocus = '';
+
+        function obGoto(step) {
+            document.querySelectorAll('.ob-step').forEach(function(s) { s.classList.remove('active'); });
+            document.querySelector('.ob-step[data-step="' + step + '"]').classList.add('active');
+            document.querySelectorAll('.ob-dots span').forEach(function(d) { d.classList.toggle('active', d.dataset
+                    .d == step); });
+        }
+
+        function obSubmitName() {
+            const v = document.getElementById('obName').value.trim();
+            if (!v) { showToast('Almost there', 'Please enter a name so LifeLens can greet you properly.',
+                'error'); return; }
+            STATE.name = v;
+            saveState();
+            obGoto(2);
+        }
+        document.getElementById('obFocusRow').addEventListener('click', function(e) {
+            const chip = e.target.closest('.chip');
+            if (!chip) return;
+            document.querySelectorAll('#obFocusRow .chip').forEach(function(c) { c.classList.remove(
+                'selected'); });
+            chip.classList.add('selected');
+            obTempFocus = chip.dataset.v;
+        });
+
+        function obFinish() {
+            STATE.focus = obTempFocus || 'all';
+            STATE.onboarded = true;
+            saveState();
+            document.getElementById('onboarding').style.display = 'none';
+            document.getElementById('appShell').style.display = 'flex';
+            boot();
+            showToast('Welcome, ' + STATE.name + ' 👋',
+                'Your journey starts now — everything you do here stays on this device.', 'success');
+            setTimeout(function() { if (!STATE.installed) openModal('installModal'); }, 1200);
+        }
+
+        // ===============================
+        // NAVIGATION
+        // ===============================
+        const NAV_ITEMS = [
+            { id: 'dashboard', ic: '🏠', label: 'Dashboard' },
+            { id: 'life', ic: '🧭', label: 'Life Analysis' },
+            { id: 'money', ic: '💰', label: 'Money Saver' },
+            { id: 'music', ic: '🎵', label: 'My Music' },
+            { id: 'wellness', ic: '🌿', label: 'Wellness Planner' },
+            { id: 'personality', ic: '🧠', label: 'Personality' },
+            { id: 'career', ic: '🎯', label: 'Career Compass' },
+            { id: 'goals', ic: '🗺️', label: 'Goal Roadmap' },
+            { id: 'advisory', ic: '💭', label: 'Life Advisory' },
+            { id: 'study', ic: '📚', label: 'Study Planner' },
+            { id: 'islamic', ic: '☪️', label: 'Islamic Knowledge' },
+            { id: 'cognitive', ic: '🧩', label: 'Cognitive Challenge' },
+            { id: 'strengths', ic: '💪', label: 'Strengths & Weaknesses' },
+            { id: 'rules', ic: '📜', label: 'Your Life, Your Rules' },
+            { id: 'koshish', ic: '✨', label: 'Koshish' },
+            { id: 'about', ic: '👤', label: 'About Shabab Ali' },
+            { id: 'settings', ic: '⚙️', label: 'Settings' }
+        ];
+
+        function buildNav() {
+            const navGroup = document.getElementById('navGroup');
+            navGroup.innerHTML = NAV_ITEMS.map(function(n) {
+                return '<button class="nav-item" data-nav="' + n.id + '"><span class="ic">' + n.ic + '</span>' + n
+                    .label + '</button>';
+            }).join('');
+            navGroup.addEventListener('click', function(e) {
+                const btn = e.target.closest('.nav-item');
+                if (!btn) return;
+                navigateTo(btn.dataset.nav);
+            });
+            const bnMain = ['dashboard', 'life', 'money', 'goals', 'strengths', 'settings'];
+            document.getElementById('bottomNavInner').innerHTML = bnMain.map(function(id) {
+                const n = NAV_ITEMS.find(function(x) { return x.id === id; });
+                return '<button class="bn-item" data-nav="' + id + '"><span class="ic">' + n.ic + '</span>' + n
+                    .label.split(' ')[0] + '</button>';
+            }).join('');
+            document.getElementById('bottomNavInner').addEventListener('click', function(e) {
+                const btn = e.target.closest('.bn-item');
+                if (!btn) return;
+                navigateTo(btn.dataset.nav);
+            });
+        }
+
+        function navigateTo(id) {
+            document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
+            const view = document.getElementById('view-' + id);
+            if (view) view.classList.add('active');
+            document.getElementById('viewTitle').textContent = view ? view.dataset.title : 'LifeLens';
+            document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.toggle('active', n.dataset
+                    .nav === id); });
+            document.querySelectorAll('.bn-item').forEach(function(n) { n.classList.toggle('active', n.dataset.nav ===
+                    id); });
+            toggleSidebar(false);
+            window.scrollTo({ top: 0, behavior: STATE.reduceMotion ? 'auto' : 'smooth' });
+            if (id === 'dashboard') renderDashboard();
+            if (id === 'strengths') renderStrengths();
+            if (id === 'rules') renderRules();
+            if (id === 'settings') renderSettings();
+            if (id === 'life') renderLifeHistory();
+        }
+
+        function toggleSidebar(open) {
+            document.getElementById('sidebar').classList.toggle('open', !!open);
+            document.getElementById('sidebarOverlay').classList.toggle('open', !!open);
+        }
+
+        // ===============================
+        // GENERIC CHIP GROUP HANDLING
+        // ===============================
+        document.querySelectorAll('[data-group]').forEach(function(group) {
+            group.addEventListener('click', function(e) {
+                const chip = e.target.closest('.chip');
+                if (!chip) return;
+                Array.from(group.children).forEach(function(c) { c.classList.remove('selected'); });
+                chip.classList.add('selected');
+            });
+        });
+
+        function getGroupValue(name) {
+            const group = document.querySelector('[data-group="' + name + '"]');
+            if (!group) return null;
+            const sel = group.querySelector('.chip.selected');
+            return sel ? sel.dataset.v : null;
+        }
+
+        // ===============================
+        // XP / GAMIFICATION ENGINE
+        // ===============================
+        const LEVELS = ['Explorer', 'Learner', 'Builder', 'Grower', 'Achiever', 'Strategist', 'Leader', 'Mentor',
+            'Master', 'Life Architect'
+        ];
+        const ACHIEVEMENTS = [
+            { id: 'first_analysis', ic: '🏆', name: 'First Analysis', desc: 'Completed your first Life Analysis' },
+            { id: 'self_explorer', ic: '🧠', name: 'Self Explorer', desc: 'Completed the Personality Explorer' },
+            { id: 'smart_saver', ic: '💰', name: 'Smart Saver', desc: 'Built a savings plan' },
+            { id: 'goal_builder', ic: '🎯', name: 'Goal Builder', desc: 'Created a Goal Roadmap' },
+            { id: 'study_strategist', ic: '📚', name: 'Study Strategist', desc: 'Built a Study Roadmap' },
+            { id: 'knowledge_seeker', ic: '☪️', name: 'Knowledge Seeker', desc: 'Completed an Islamic Knowledge test' },
+            { id: 'brain_challenger', ic: '🧩', name: 'Brain Challenger', desc: 'Completed the Cognitive Challenge' },
+            { id: 'strength_finder', ic: '💪', name: 'Strength Finder',
+            desc: 'Viewed your Strengths & Weaknesses' },
+            { id: 'consistency', ic: '🔥', name: 'Consistency', desc: 'Retook an assessment to track progress' },
+            { id: 'growth_mindset', ic: '🌱', name: 'Growth Mindset', desc: 'Built your Personal Code' }
+        ];
+
+        function addXp(amount, reason) {
+            STATE.xp += amount;
+            const newLevel = Math.min(10, Math.floor(STATE.xp / 150) + 1);
+            const leveledUp = newLevel > STATE.level;
+            STATE.level = newLevel;
+            saveState();
+            updateXpUI();
+            if (leveledUp) showToast('Level up! ✨', 'You\'re now Level ' + STATE.level + ' — ' + LEVELS[STATE.level - 1] +
+                '.', 'success');
+            else if (reason) showToast('+' + amount + ' XP', reason, 'success');
+        }
+
+        function unlockAchievement(id) {
+            if (STATE.achievements.includes(id)) return;
+            STATE.achievements.push(id);
+            saveState();
+            const a = ACHIEVEMENTS.find(function(x) { return x.id === id; });
+            if (a) showToast('Achievement unlocked 🏆', a.name + ' — ' + a.desc, 'success');
+        }
+
+        function updateXpUI() {
+            document.getElementById('sbLevel').textContent = 'Level ' + STATE.level + ' — ' + LEVELS[STATE.level - 1];
+            document.getElementById('sbXp').textContent = STATE.xp + ' XP';
+            const pct = Math.min(100, ((STATE.xp % 150) / 150) * 100);
+            document.getElementById('sbXpFill').style.width = pct + '%';
+            const se = document.getElementById('statLevel');
+            if (se) se.textContent = STATE.level;
+            const sx = document.getElementById('statXp');
+            if (sx) sx.textContent = STATE.xp;
+        }
+
+        // ===============================
+        // PWA / INSTALL HANDLING
+        // ===============================
+        let deferredInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            document.getElementById('installBtn').classList.remove('hidden');
+        });
+        window.addEventListener('appinstalled', function() {
+            STATE.installed = true;
+            saveState();
+            reflectInstallState();
+            showToast('Installed 🎉', 'LifeLens is now on your home screen.', 'success');
+        });
+
+        function triggerInstall() {
+            closeModal('installModal');
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                deferredInstallPrompt.userChoice.then(function(choice) {
+                    if (choice.outcome === 'accepted') { STATE.installed = true;
+                        saveState();
+                        reflectInstallState(); }
+                    deferredInstallPrompt = null;
+                });
+            } else {
+                showToast('Install from your browser menu',
+                    'Look for "Add to Home Screen" / "Install App" in the browser menu (⋮ or share icon).',
+                    'info');
+            }
+        }
+
+        function reflectInstallState() {
+            const installed = STATE.installed || window.matchMedia('(display-mode: standalone)').matches || window.navigator
+                .standalone === true;
+            document.getElementById('installBtn').classList.toggle('hidden', installed);
+            document.getElementById('installedBadge').classList.toggle('hidden', !installed);
+            const s = document.getElementById('settingsInstallState');
+            if (s) s.textContent = installed ? 'Yes — running as an installed app' : 'Not installed yet';
+        }
+
+        if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+            const swCode =
+                'const CACHE="lifelens-v1";self.addEventListener("install",e=>{self.skipWaiting()});self.addEventListener("activate",e=>{self.clients.claim()});self.addEventListener("fetch",e=>{e.respondWith(caches.open(CACHE).then(async cache=>{const cached=await cache.match(e.request);if(cached)return cached;try{const res=await fetch(e.request);cache.put(e.request,res.clone());return res}catch(err){return cached||Response.error()}}))});';
+            const swBlob = new Blob([swCode], { type: 'application/javascript' });
+            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(function() {});
+        }
+
+        (function setManifest() {
+            const manifest = {
+                name: 'LifeLens — Understand Yourself. Improve Yourself.',
+                short_name: 'LifeLens',
+                start_url: '.',
+                display: 'standalone',
+                background_color: '#080a11',
+                theme_color: '#0A0C14',
+                icons: [{ src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔍</text></svg>',
+                    sizes: '192x192', type: 'image/svg+xml' }]
+            };
+            const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+            document.getElementById('manifestLink').href = URL.createObjectURL(blob);
+        })();
+
+        // ===============================
+        // SETTINGS VIEW
+        // ===============================
+        function renderSettings() {
+            document.getElementById('settingsName').value = STATE.name;
+            document.getElementById('motionToggleBtn').textContent = STATE.reduceMotion ? 'On' : 'Off';
+            reflectInstallState();
+            const achGrid = document.getElementById('achGrid');
+            achGrid.innerHTML = ACHIEVEMENTS.map(function(a) {
+                const unlocked = STATE.achievements.includes(a.id);
+                return '<div class="ach-card ' + (unlocked ? '' : 'locked') +
+                    '"><div class="ach-ic">' + a.ic + '</div><div><div style="font-weight:800;font-size:12.5px;">' + a
+                    .name + '</div><div class="muted" style="font-size:11px;">' + a.desc + '</div></div></div>';
+            }).join('');
+        }
+
+        function saveProfile() {
+            const v = document.getElementById('settingsName').value.trim();
+            if (!v) { showToast('Name required', 'Please enter a name.', 'error'); return; }
+            STATE.name = v;
+            saveState();
+            showToast('Saved', 'Your profile has been updated.', 'success');
+            renderDashboard();
+        }
+
+        function toggleMotion() {
+            STATE.reduceMotion = !STATE.reduceMotion;
+            saveState();
+            document.documentElement.classList.toggle('reduce-motion', STATE.reduceMotion);
+            const btn = document.getElementById('motionToggleBtn');
+            if (btn) btn.textContent = STATE.reduceMotion ? 'On' : 'Off';
+            showToast('Preference saved', 'Reduce motion is now ' + (STATE.reduceMotion ? 'on' : 'off') + '.', 'success');
+        }
+
+        // ===============================
+        // DATA EXPORT / IMPORT / RESET
+        // ===============================
+        function exportData() {
+            try {
+                const blob = new Blob([JSON.stringify(STATE, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'lifelens-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Exported', 'Your backup file has been downloaded.', 'success');
+            } catch (e) { showToast('Export failed', 'Something went wrong creating your backup.', 'error'); }
+        }
+        document.getElementById('importFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const parsed = JSON.parse(ev.target.result);
+                    if (typeof parsed !== 'object' || parsed === null) throw new Error('bad format');
+                    STATE = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), parsed);
+                    saveState();
+                    showToast('Data restored', 'Your backup has been imported successfully.', 'success');
+                    boot();
+                } catch (err) {
+                    showToast('Import failed', 'That file doesn\'t look like a valid LifeLens backup.', 'error');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+
+        function resetAllData() {
+            localStorage.removeItem(LS_KEY);
+            STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
+            closeModal('resetModal');
+            showToast('Data cleared', 'All local data has been reset.', 'success');
+            location.reload();
+        }
+
+        // ===============================
+        // DASHBOARD
+        // ===============================
+        const QUOTES = [
+            'Progress does not always look dramatic.',
+            'Some days are for moving forward. Some are for recovering and preparing.',
+            'You cannot control every outcome, but you can control the quality of your effort.',
+            'Small, steady steps outlast dramatic bursts that fade.',
+            'A slow week is not a failed journey.',
+            'Understanding yourself is the first real step toward changing anything.'
+        ];
+
+        function renderDashboard() {
+            const hour = new Date().getHours();
+            const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+            document.getElementById('greetingText').textContent = greet + ', ' + (STATE.name || 'friend') + ' 👋';
+            document.getElementById('quoteRotator').textContent = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+            updateXpUI();
+            const totalAssessments = STATE.lifeHistory.length + STATE.personalityHistory.length + STATE.careerHistory
+                .length + STATE.islamicHistory.length + STATE.cognitiveHistory.length;
+            document.getElementById('statAssess').textContent = totalAssessments;
+            const snapshot = computeLifeSnapshot();
+            const vals = Object.values(snapshot);
+            const overview = vals.length ? Math.round(vals.reduce(function(a, b) { return a + b; }, 0) / vals.length) :
+            0;
+            document.getElementById('statOverview').textContent = overview || '—';
+            drawRadar('dashRadar', snapshot);
+            const list = document.getElementById('dashSummaryList');
+            const bits = [];
+            if (STATE.lifeHistory.length) {
+                const last = STATE.lifeHistory[STATE.lifeHistory.length - 1];
+                bits.push('Your strongest life area right now: <strong>' + last.strongest + '</strong>.');
+                bits.push('Growth opportunity: <strong>' + last.weakest + '</strong>.');
+            }
+            if (STATE.goalPlan) bits.push('Active goal: <strong>' + escapeHtml(STATE.goalPlan.goal) + '</strong>.');
+            if (STATE.moneyPlan) bits.push('Saving toward <strong>' + STATE.moneyPlan.currency + STATE.moneyPlan.goal +
+                '</strong> — ' + STATE.moneyPlan.progressPct + '% there.');
+            if (!bits.length) bits.push('Complete Life Analysis to see your personalized snapshot here.');
+            list.innerHTML = bits.map(function(b) { return '<div class="muted" style="font-size:13.5px;">• ' + b +
+                    '</div>'; }).join('');
+            const grid = document.getElementById('moduleGrid');
+            const tiles = [
+                { id: 'life', ic: '🧭', t: 'Life Analysis', d: 'See your full self-reflection profile' },
+                { id: 'money', ic: '💰', t: 'Money Saver', d: 'Plan your savings goal' },
+                { id: 'personality', ic: '🧠', t: 'Personality', d: 'Explore your traits' },
+                { id: 'career', ic: '🎯', t: 'Career Compass', d: 'Map your interests' },
+                { id: 'goals', ic: '🗺️', t: 'Goal Roadmap', d: 'Turn a goal into a plan' },
+                { id: 'study', ic: '📚', t: 'Study Planner', d: 'Track subjects & targets' },
+                { id: 'cognitive', ic: '🧩', t: 'Cognitive Challenge', d: 'Test your reasoning' },
+                { id: 'islamic', ic: '☪️', t: 'Islamic Knowledge', d: 'Test & build knowledge' }
+            ];
+            grid.innerHTML = tiles.map(function(t) {
+                return '<div class="card hoverable module-tile" onclick="navigateTo(\'' + t.id +
+                    '\')"><div class="m-ic">' + t.ic + '</div><h3>' + t.t + '</h3><p>' + t.d +
+                    '</p></div>';
+            }).join('');
+        }
+
+        function escapeHtml(s) { const d = document.createElement('div');
+            d.textContent = s; return d.innerHTML; }
+
+        function computeLifeSnapshot() {
+            const base = { Mind: 50, Time: 50, Growth: 50, Relationships: 50, Goals: 50, Money: 50, Wellness: 50,
+                Learning: 50, Discipline: 50, Purpose: 50 };
+            if (STATE.lifeHistory.length) {
+                const last = STATE.lifeHistory[STATE.lifeHistory.length - 1];
+                base.Mind = last.scores.Mind;
+                base.Relationships = last.scores.Relationships;
+                base.Goals = last.scores.Goals;
+                base.Money = last.scores.Money;
+                base.Wellness = last.scores.Wellness;
+                base.Growth = last.scores.Growth;
+                base.Time = last.scores.Time;
+                base.Discipline = last.scores.Discipline;
+            }
+            if (STATE.goalPlan) base.Purpose = Math.min(95, base.Purpose + 15);
+            if (STATE.studyPlan) base.Learning = Math.min(95, base.Learning + 15);
+            return base;
+        }
+
+        function drawRadar(svgId, dataObj) {
+            const svg = document.getElementById(svgId);
+            if (!svg) return;
+            const labels = Object.keys(dataObj);
+            const values = Object.values(dataObj);
+            const n = labels.length;
+            const cx = 160,
+                cy = 160,
+                R = 115;
+            const pts = values.map(function(v, i) {
+                const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+                const r = R * (v / 100);
+                return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
+            });
+            const ringPts = function(frac) {
+                return labels.map(function(_, i) {
+                    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+                    return [cx + R * frac * Math.cos(angle), cy + R * frac * Math.sin(angle)];
+                });
+            };
+            let svgContent = '';
+            [0.25, 0.5, 0.75, 1].forEach(function(f) {
+                svgContent += '<polygon points="' + ringPts(f).map(function(p) { return p.join(','); }).join(
+                    ' ') + '" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="1"/>';
+            });
+            labels.forEach(function(lab, i) {
+                const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+                const lx = cx + (R + 22) * Math.cos(angle),
+                    ly = cy + (R + 22) * Math.sin(angle);
+                svgContent += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + R * Math.cos(angle)) +
+                    '" y2="' + (cy + R * Math.sin(angle)) + '" stroke="rgba(255,255,255,.06)"/>';
+                svgContent += '<text x="' + lx + '" y="' + ly +
+                    '" fill="#9c9bae" font-size="9.5" text-anchor="middle" font-family="Manrope" dy="3">' +
+                    lab + '</text>';
+            });
+            svgContent += '<polygon points="' + pts.map(function(p) { return p.join(','); }).join(' ') +
+                '" fill="rgba(107,116,232,.28)" stroke="#8890f2" stroke-width="2"/>';
+            pts.forEach(function(p) { svgContent += '<circle cx="' + p[0] + '" cy="' + p[1] +
+                    '" r="3" fill="#d8ab5f"/>'; });
+            svg.innerHTML = svgContent;
+        }
+
+        // ===============================
+        // GENERIC RESULTS RING & BARS
+        // ===============================
+        function ringSVG(pct, color, size, stroke) {
+            size = size || 140;
+            stroke = stroke || 12;
+            const r = (size - stroke) / 2;
+            const circ = 2 * Math.PI * r;
+            const offset = circ * (1 - pct / 100);
+            return '<div class="ring-wrap" style="width:' + size + 'px;height:' + size + 'px;"><svg width="' + size +
+                '" height="' + size +
+                '"><circle class="ring-bg" cx="' + (size / 2) + '" cy="' + (size / 2) + '" r="' + r +
+                '" stroke-width="' + stroke + '"/><circle class="ring-fg" cx="' + (size / 2) + '" cy="' + (size / 2) +
+                '" r="' + r + '" stroke-width="' + stroke + '" stroke="' + color + '" stroke-dasharray="' + circ +
+                '" stroke-dashoffset="' + circ + '" data-final="' + offset +
+                '"/></svg><div class="ring-label"><span class="num">' + pct +
+                '</span><span class="cap">out of 100</span></div></div>';
+        }
+
+        function animateRings(container) {
+            container.querySelectorAll('.ring-fg').forEach(function(el) {
+                requestAnimationFrame(function() {
+                    setTimeout(function() { el.style.strokeDashoffset = el.dataset.final; }, 80);
+                });
+            });
+        }
+
+        function animateBars(container) {
+            container.querySelectorAll('.bar-fill').forEach(function(el) {
+                const v = el.dataset.val;
+                requestAnimationFrame(function() {
+                    setTimeout(function() { el.style.width = v + '%'; }, 80);
+                });
+            });
+        }
+
+        // =====================================================================
+        // QUIZ ENGINE
+        // =====================================================================
+        const QUIZZES = {};
+        let activeQuiz = null;
+
+        function startQuiz(type) {
+            const def = QUIZZES[type];
+            if (!def) { showToast('Error', 'Quiz data not found for: ' + type, 'error'); return; }
+            const areaId = type + 'QuizArea';
+            document.getElementById(areaId).style.display = 'block';
+            const introEl = document.getElementById(type + 'Intro');
+            if (introEl) introEl.style.display = 'none';
+            const resultEl = document.getElementById(type + 'ResultArea');
+            if (resultEl) resultEl.style.display = 'none';
+            activeQuiz = { type: type, qIndex: 0, answers: new Array(def.questions.length).fill(null), startTime: Date
+                .now() };
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const def = QUIZZES[activeQuiz.type];
+            const q = def.questions[activeQuiz.qIndex];
+            const area = document.getElementById(activeQuiz.type + 'QuizArea');
+            const pct = ((activeQuiz.qIndex) / def.questions.length) * 100;
+            let optionsHtml = '';
+            if (q.type === 'likert') {
+                const labels = q.labels || ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'];
+                optionsHtml = '<div class="likert">' + labels.map(function(l, i) {
+                    return '<button data-i="' + i + '" onclick="answerQuiz(' + i + ')" class="' + (activeQuiz
+                        .answers[activeQuiz.qIndex] === i ? 'selected' : '') + '">' + l + '</button>';
+                }).join('') + '</div>';
+            } else if (q.type === 'mcq') {
+                optionsHtml = '<div style="display:flex;flex-direction:column;gap:10px;">' + q.options.map(function(o,
+                    i) {
+                    return '<button class="chip selectable ' + (activeQuiz.answers[activeQuiz.qIndex] === i ?
+                        'selected' : '') +
+                        '" style="text-align:left;padding:13px 16px;justify-content:flex-start;" onclick="answerQuiz(' +
+                        i + ')">' + o + '</button>';
+                }).join('') + '</div>';
+            } else if (q.type === 'visual') {
+                optionsHtml = '<div class="radar-wrap">' + (q.svg || '') + '</div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px;">' +
+                    q.options.map(function(o, i) {
+                        return '<button class="chip selectable ' + (activeQuiz.answers[activeQuiz.qIndex] === i ?
+                            'selected' : '') + '" onclick="answerQuiz(' + i + ')">' + o + '</button>';
+                    }).join('') + '</div>';
+            }
+            area.innerHTML =
+                '<div class="card"><div class="q-count">Question ' + (activeQuiz.qIndex + 1) + ' of ' + def.questions
+                .length + (q.category ? ' · ' + q.category : '') +
+                '</div><div class="q-progress-track"><div class="q-progress-fill" style="width:' + pct +
+                '%"></div></div><div class="q-text">' + q.text + '</div>' + optionsHtml +
+                '<div class="step-nav"><button class="btn btn-ghost" ' + (activeQuiz.qIndex === 0 ? 'disabled' : '') +
+                ' onclick="quizBack()">← Back</button><button class="btn btn-gold" onclick="quizNext()">' + (activeQuiz
+                    .qIndex === def.questions.length - 1 ? 'See Results →' : 'Next →') +
+                '</button></div></div>';
+        }
+
+        function answerQuiz(i) {
+            activeQuiz.answers[activeQuiz.qIndex] = i;
+            renderQuizQuestion();
+        }
+
+        function quizBack() { if (activeQuiz.qIndex > 0) { activeQuiz.qIndex--;
+                renderQuizQuestion(); } }
+
+        function quizNext() {
+            const def = QUIZZES[activeQuiz.type];
+            if (activeQuiz.answers[activeQuiz.qIndex] === null) { showToast('Pick an answer',
+                'Choose one option to continue.', 'error'); return; }
+            if (activeQuiz.qIndex < def.questions.length - 1) { activeQuiz.qIndex++;
+                renderQuizQuestion(); } else finishQuiz();
+        }
+
+        function finishQuiz() {
+            document.getElementById(activeQuiz.type + 'QuizArea').style.display = 'none';
+            const scorer = QUIZ_SCORERS[activeQuiz.type];
+            if (scorer) scorer(activeQuiz);
+            else showToast('Error', 'No scorer found for quiz type: ' + activeQuiz.type, 'error');
+        }
+
+        // =====================================================================
+        // NEXT_STEPS for Life Analysis
+        // =====================================================================
+        const NEXT_STEPS = {
+            Mind: 'Try a 5-minute wind-down before bed to give your mind a clear stop signal each day.',
+            Time: 'Pick your single most important task each morning and do it before checking your phone.',
+            Goals: 'Break your current goal into one action small enough to do in 10 minutes.',
+            Relationships: 'Reach out to one person today just to check in, no agenda.',
+            Growth: 'Block 15 minutes today for reading or practicing one skill.',
+            Discipline: 'Choose one small promise to yourself and keep it for 7 days straight.',
+            Money: 'Track every expense for 3 days before deciding what to cut.',
+            Wellness: 'Set a fixed wake-up time and hold it for a week, even on weekends.'
+        };
+
+        // =====================================================================
+        // LIFE ANALYSIS QUIZ DATA + SCORING
+        // =====================================================================
+        QUIZZES.life = {
+            questions: [
+                { category: 'Mind', text: 'How often do you feel mentally overwhelmed?', type: 'likert',
+                reverse: true },
+                { category: 'Mind', text: 'How often can you calm yourself after a difficult day?', type: 'likert' },
+                { category: 'Mind', text: 'How satisfied are you with your current life?', type: 'likert' },
+                { category: 'Mind', text: 'How often do you feel hopeful about your future?', type: 'likert' },
+                { category: 'Mind', text: 'How often do you overthink your decisions?', type: 'likert', reverse: true },
+                { category: 'Time', text: 'How well do you manage your day?', type: 'likert' },
+                { category: 'Time', text: 'How often do you postpone important tasks?', type: 'likert', reverse: true },
+                { category: 'Time', text: 'How much unplanned time do you spend on entertainment or social media?',
+                    type: 'likert', reverse: true },
+                { category: 'Goals', text: 'Do you have clear goals right now?', type: 'likert' },
+                { category: 'Goals', text: 'How consistently do you work toward your goals?', type: 'likert' },
+                { category: 'Goals', text: 'How often do you abandon goals before finishing?', type: 'likert',
+                reverse: true },
+                { category: 'Relationships', text: 'How connected do you feel to your family?', type: 'likert' },
+                { category: 'Relationships', text: 'How would you rate the quality of your friendships?',
+                type: 'likert' },
+                { category: 'Relationships', text: 'How well do you communicate what you need?', type: 'likert' },
+                { category: 'Relationships', text: 'How well do you listen when others speak?', type: 'likert' },
+                { category: 'Relationships', text: 'How easily can you apologize when you\'re wrong?', type: 'likert' },
+                { category: 'Growth', text: 'How often do you learn a new skill?', type: 'likert' },
+                { category: 'Growth', text: 'How often do you read or study something new?', type: 'likert' },
+                { category: 'Growth', text: 'How curious do you feel about the world around you?', type: 'likert' },
+                { category: 'Growth', text: 'How open are you to feedback, even when it stings?', type: 'likert' },
+                { category: 'Discipline', text: 'How often do you keep promises you make to yourself?', type: 'likert' },
+                { category: 'Discipline', text: 'How consistently do you complete tasks you start?', type: 'likert' },
+                { category: 'Discipline', text: 'How well do you maintain daily routines?', type: 'likert' },
+                { category: 'Discipline', text: 'How quickly do you recover after a setback?', type: 'likert' },
+                { category: 'Money', text: 'How consistently do you save money?', type: 'likert' },
+                { category: 'Money', text: 'How well do you plan your spending?', type: 'likert' },
+                { category: 'Money', text: 'How often do you spend impulsively?', type: 'likert', reverse: true },
+                { category: 'Wellness', text: 'How would you rate your sleep routine?', type: 'likert' },
+                { category: 'Wellness', text: 'How much daily movement do you typically get?', type: 'likert' },
+                { category: 'Wellness', text: 'How would you rate your general energy levels?', type: 'likert' }
+            ]
+        };
+
+        function scoreLikertGroup(aq, category) {
+            const def = QUIZZES.life;
+            const idxs = def.questions.map(function(q, i) { return q.category === category ? i : -1; }).filter(function(
+                i) { return i >= 0; });
+            let total = 0;
+            idxs.forEach(function(i) {
+                let v = aq.answers[i];
+                if (def.questions[i].reverse) v = 4 - v;
+                total += v;
+            });
+            return Math.round((total / (idxs.length * 4)) * 100);
+        }
+        const QUIZ_SCORERS = {};
+        QUIZ_SCORERS.life = function(aq) {
+            const cats = ['Mind', 'Time', 'Goals', 'Relationships', 'Growth', 'Discipline', 'Money', 'Wellness'];
+            const scores = {};
+            cats.forEach(function(c) { scores[c] = scoreLikertGroup(aq, c); });
+            const sorted = Object.entries(scores).sort(function(a, b) { return b[1] - a[1]; });
+            const strongest = sorted[0][0],
+                weakest = sorted[sorted.length - 1][0];
+            const record = { date: new Date().toISOString(), scores: scores, strongest: strongest, weakest: weakest };
+            STATE.lifeHistory.push(record);
+            saveState();
+            addXp(40, 'Life Analysis complete');
+            if (STATE.lifeHistory.length === 1) unlockAchievement('first_analysis');
+            if (STATE.lifeHistory.length > 1) unlockAchievement('consistency');
+            renderLifeResult(record);
+        };
+
+        function renderLifeResult(record) {
+            const el = document.getElementById('lifeResultArea');
+            el.style.display = 'block';
+            const cats = Object.keys(record.scores);
+            const overview = Math.round(cats.reduce(function(a, c) { return a + record.scores[c]; }, 0) / cats.length);
+            el.innerHTML =
+                '<div class="card" style="text-align:center;margin-bottom:18px;"><div class="eyebrow">Your Life Profile</div><div style="display:flex;justify-content:center;margin:14px 0;">' +
+                ringSVG(overview, '#6b74e8') +
+                '</div><p class="muted">This is a self-reflection result based on your answers today — not a clinical or scientific measurement of your life.</p></div><div class="grid grid-2"><div class="card"><h3 class="section-title" style="font-size:15px;">Category Breakdown</h3>' +
+                cats.map(function(c) {
+                    return '<div class="bar-row"><span class="b-label">' + c +
+                        '</span><div class="bar-track"><div class="bar-fill" data-val="' + record.scores[c] +
+                        '"></div></div><span class="bar-val">' + record.scores[c] + '</span></div>';
+                }).join('') +
+                '</div><div class="card"><div class="sw-card strength" style="margin-bottom:12px;"><strong>Your Strongest Area</strong><p class="muted" style="margin-top:6px;">' +
+                record.strongest +
+                ' — this is where your current habits are working well for you.</p></div><div class="sw-card growth" style="margin-bottom:12px;"><strong>Your Growth Opportunity</strong><p class="muted" style="margin-top:6px;">' +
+                record.weakest +
+                ' — a good place to focus deliberate effort next.</p></div><div class="result-explain"><strong>Three practical next steps:</strong><br>1. ' +
+                (NEXT_STEPS[record.weakest] || 'Focus on this area deliberately.') +
+                '<br>2. Revisit this analysis in 30 days to see real movement.<br>3. Pair this with the Goal Roadmap to build a concrete plan.</div></div></div><div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;"><button class="btn btn-gold" onclick="startQuiz(\'life\')">Retake Analysis</button><button class="btn btn-ghost" onclick="window.print()">Print Report</button><button class="btn btn-ghost" onclick="navigateTo(\'strengths\')">View Strengths & Weaknesses</button></div>';
+            animateRings(el);
+            animateBars(el);
+        }
+
+        function renderLifeHistory() {
+            const box = document.getElementById('lifeHistoryBox');
+            if (!STATE.lifeHistory.length) { box.innerHTML = ''; return; }
+            if (STATE.lifeHistory.length > 0 && document.getElementById('lifeResultArea').style.display !== 'block') {
+                renderLifeResult(STATE.lifeHistory[STATE.lifeHistory.length - 1]);
+            }
+            if (STATE.lifeHistory.length > 1) {
+                const first = STATE.lifeHistory[0],
+                    last = STATE.lifeHistory[STATE.lifeHistory.length - 1];
+                const days = Math.round((new Date(last.date) - new Date(first.date)) / 86400000);
+                box.innerHTML =
+                    '<div class="result-explain"><strong>Life Evolution</strong> — ' + (days > 0 ? days + ' days ago' :
+                        'Earlier attempt') + ' → Today<br>' + Object.keys(last.scores).map(function(c) { return c +
+                        ': ' + first.scores[c] + ' → ' + last.scores[c] + ' ' + (last.scores[c] >= first.scores[
+                            c] ? '↑' : '↓'); }).join(' · ') + '</div>';
+            }
+        }
+
+        // =====================================================================
+        // PERSONALITY QUIZ DATA + SCORING
+        // =====================================================================
+        QUIZZES.personality = {
+            questions: [
+                { category: 'Openness', text: 'I enjoy exploring new ideas even if they challenge what I already believe.',
+                    type: 'likert' },
+                { category: 'Openness', text: 'I prefer familiar routines over trying something new.', type: 'likert',
+                    reverse: true },
+                { category: 'Openness', text: 'I often find myself curious about how things work.', type: 'likert' },
+                { category: 'Openness', text: 'Abstract or theoretical topics don\'t interest me much.', type: 'likert',
+                    reverse: true },
+                { category: 'Conscientiousness', text: 'I plan things out carefully before starting.', type: 'likert' },
+                { category: 'Conscientiousness', text: 'I often leave tasks unfinished.', type: 'likert', reverse: true },
+                { category: 'Conscientiousness', text: 'I keep my commitments even when it\'s inconvenient.',
+                type: 'likert' },
+                { category: 'Conscientiousness', text: 'My space and schedule tend to be disorganized.', type: 'likert',
+                    reverse: true },
+                { category: 'Extraversion', text: 'Being around people usually energizes me.', type: 'likert' },
+                { category: 'Extraversion', text: 'I prefer quiet time alone over group settings.', type: 'likert',
+                    reverse: true },
+                { category: 'Extraversion', text: 'I speak up easily in group conversations.', type: 'likert' },
+                { category: 'Extraversion', text: 'Large social gatherings tend to drain me.', type: 'likert',
+                reverse: true },
+                { category: 'Agreeableness',
+                    text: 'I try to see things from other people\'s perspective, even in disagreement.',
+                type: 'likert' },
+                { category: 'Agreeableness', text: 'I find it hard to trust other people\'s intentions.', type: 'likert',
+                    reverse: true },
+                { category: 'Agreeableness', text: 'I go out of my way to help people around me.', type: 'likert' },
+                { category: 'Agreeableness', text: 'I can be blunt even if it might hurt someone.', type: 'likert',
+                    reverse: true },
+                { category: 'Emotional Stability', text: 'I stay calm under pressure most of the time.', type: 'likert' },
+                { category: 'Emotional Stability', text: 'Small setbacks can put me in a bad mood for a while.',
+                    type: 'likert', reverse: true },
+                { category: 'Emotional Stability', text: 'I recover quickly after a stressful event.', type: 'likert' },
+                { category: 'Emotional Stability', text: 'I often worry about things outside my control.', type: 'likert',
+                    reverse: true }
+            ]
+        };
+        const TRAIT_INFO = {
+            Openness: { high: 'You tend to enjoy new ideas, creativity and variety.',
+                low: 'You tend to prefer the tried-and-tested over the untested.',
+            work: 'Environments with variety and creative freedom' },
+            Conscientiousness: { high: 'You tend to be organized, reliable and goal-focused.',
+                low: 'You tend to be flexible and spontaneous rather than rigidly planned.',
+                work: 'Structured environments with clear expectations' },
+            Extraversion: { high: 'You tend to draw energy from people and social settings.',
+                low: 'You tend to draw energy from quiet, focused, independent work.',
+            work: 'Collaborative, people-facing settings' },
+            Agreeableness: { high: 'You tend to prioritize harmony and consideration for others.',
+                low: 'You tend to be direct and comfortable with healthy friction.',
+            work: 'Team-oriented, service-driven settings' },
+            'Emotional Stability': { high: 'You tend to stay composed under pressure.',
+                low: 'You may feel stress more intensely — which also often means you feel things deeply.',
+                work: 'Predictable environments with manageable pressure' }
+        };
+        QUIZ_SCORERS.personality = function(aq) {
+            const cats = ['Openness', 'Conscientiousness', 'Extraversion', 'Agreeableness', 'Emotional Stability'];
+            const def = QUIZZES.personality;
+            const scores = {};
+            cats.forEach(function(cat) {
+                const idxs = def.questions.map(function(q, i) { return q.category === cat ? i : -1; }).filter(
+                    function(i) { return i >= 0; });
+                let total = 0;
+                idxs.forEach(function(i) { let v = aq.answers[i]; if (def.questions[i].reverse) v = 4 - v;
+                    total += v; });
+                scores[cat] = Math.round((total / (idxs.length * 4)) * 100);
+            });
+            const record = { date: new Date().toISOString(), scores: scores };
+            STATE.personalityHistory.push(record);
+            saveState();
+            addXp(35, 'Personality Exploration complete');
+            unlockAchievement('self_explorer');
+            renderPersonalityResult(record);
+        };
+
+        function renderPersonalityResult(record) {
+            const el = document.getElementById('personalityResultArea');
+            el.style.display = 'block';
+            const cats = Object.keys(record.scores);
+            el.innerHTML =
+                '<div class="card" style="margin-bottom:18px;"><div class="eyebrow">Your Trait Profile</div><p class="muted" style="margin-bottom:14px;">This is not a clinical psychological diagnosis — it\'s a self-report snapshot using well-studied, broad personality dimensions.</p>' +
+                cats.map(function(c) {
+                    return '<div class="bar-row"><span class="b-label">' + c +
+                        '</span><div class="bar-track"><div class="bar-fill" data-val="' + record.scores[c] +
+                        '"></div></div><span class="bar-val">' + record.scores[c] + '</span></div>';
+                }).join('') + '</div><div class="grid grid-2">' + cats.map(function(c) {
+                    const info = TRAIT_INFO[c];
+                    const isHigh = record.scores[c] >= 55;
+                    return '<div class="card"><strong>' + c + ': ' + record.scores[c] +
+                        '</strong><p class="muted" style="margin-top:8px;">' + (isHigh ? info.high : info
+                            .low) + '</p><p class="small-note" style="margin-top:8px;">Tends to suit: ' + info
+                        .work + '</p></div>';
+                }).join('') +
+                '</div><div style="display:flex;gap:10px;margin-top:18px;"><button class="btn btn-gold" onclick="startQuiz(\'personality\')">Retake</button><button class="btn btn-ghost" onclick="window.print()">Print Report</button></div>';
+            animateBars(el);
+        }
+
+        // =====================================================================
+        // CAREER COMPASS QUIZ DATA + SCORING
+        // =====================================================================
+        QUIZZES.career = {
+            questions: [
+                { category: 'Interests',
+                    text: 'Which activity would you naturally gravitate toward on a free afternoon?', type: 'mcq',
+                    options: ['Building or fixing something', 'Reading, writing or researching a topic',
+                        'Organizing an event or leading a group',
+                        'Sketching, designing or creating something new',
+                        'Helping a friend work through a problem'
+                    ],
+                    map: ['tech', 'research', 'business', 'design', 'helping'] },
+                { category: 'Interests', text: 'A subject that makes you genuinely curious is usually about:',
+                    type: 'mcq',
+                    options: ['How systems and machines work', 'Why people behave the way they do',
+                        'How money and markets move', 'How to make something look and feel right',
+                        'How the human body or nature works'
+                    ],
+                    map: ['tech', 'education', 'business', 'design', 'medicine'] },
+                { category: 'Work preference', text: 'In a group project, you\'re most drawn to:', type: 'mcq',
+                    options: ['Working with the data or the technical build', 'Working directly with people',
+                        'Designing how it looks and feels', 'Leading and coordinating the team',
+                        'Investigating and researching the topic deeply'
+                    ],
+                    map: ['tech', 'helping', 'design', 'business', 'research'] },
+                { category: 'Skills', text: 'Which of these feels like your strongest natural skill?', type: 'mcq',
+                    options: ['Logical / mathematical thinking', 'Communication and writing',
+                        'Creativity and design sense', 'Leadership and organizing others',
+                        'Careful, structured problem-solving'
+                    ],
+                    map: ['tech', 'education', 'design', 'business', 'engineering'] },
+                { category: 'Work style', text: 'Your ideal working rhythm is:', type: 'mcq',
+                    options: ['Independent, deep-focus work', 'Fast-paced and constantly changing',
+                        'Structured with clear steps', 'Flexible with room to improvise',
+                        'Team-based and collaborative'
+                    ],
+                    map: ['research', 'business', 'engineering', 'design', 'helping'] },
+                { category: 'Motivation', text: 'What would motivate you most in a long career?', type: 'mcq',
+                    options: ['Solving hard technical problems', 'Serving and helping people directly',
+                        'Building and leading something of your own',
+                        'Creating things people genuinely enjoy', 'Constant learning and discovery'
+                    ],
+                    map: ['tech', 'medicine', 'business', 'design', 'research'] },
+                { category: 'Persistence', text: 'When a task becomes genuinely difficult, what do you usually do?',
+                    type: 'mcq',
+                    options: ['Break it into smaller pieces and keep going',
+                        'Ask someone for help or a different perspective',
+                        'Take a short break, then come back with fresh energy',
+                        'Push through immediately no matter what',
+                        'Step back and reconsider whether it\'s worth pursuing'
+                    ],
+                    map: ['engineering', 'helping', 'design', 'business', 'research'] },
+                { category: 'Skills', text: 'Numbers and data, in general, feel to you:', type: 'mcq',
+                    options: ['Comfortable and satisfying to work with',
+                        'Fine, but not my favorite part of a task',
+                        'Something I\'d rather have someone else handle',
+                        'Interesting when tied to real decisions',
+                        'Genuinely exciting — I look for patterns'
+                    ],
+                    map: ['tech', 'engineering', 'helping', 'business', 'research'] },
+                { category: 'Interests', text: 'Which of these would you rather spend a weekend learning?',
+                    type: 'mcq',
+                    options: ['A programming language or new software tool',
+                        'A new language or piece of world history',
+                        'How to pitch and run a small business idea', 'A design or art technique',
+                        'First-aid or basic health & wellness skills'
+                    ],
+                    map: ['tech', 'education', 'business', 'design', 'medicine'] },
+                { category: 'Work preference',
+                    text: 'Public service or working for the community appeals to you:', type: 'mcq',
+                    options: ['Strongly — it\'s a big part of what I want from work',
+                        'Somewhat, if it\'s combined with other interests',
+                        'Not particularly, I\'m drawn elsewhere',
+                        'It depends heavily on the specific role',
+                        'I\'d rather build something of my own instead'
+                    ],
+                    map: ['helping', 'education', 'tech', 'business', 'business'] }
+            ]
+        };
+        const CAREER_CLUSTERS = {
+            tech: { name: 'Technology & Engineering',
+                why: 'Your answers show a strong pull toward building, systems, and technical problem-solving.',
+                careers: ['Software Developer', 'Data Analyst', 'Systems Engineer', 'Cybersecurity Specialist'],
+                skills: ['Programming fundamentals', 'Logical problem-solving', 'Tools like Git and basic algorithms'] },
+            research: { name: 'Research & Investigation',
+                why: 'You lean toward deep, careful investigation and understanding topics thoroughly.',
+                careers: ['Research Analyst', 'Scientist', 'Data Scientist', 'Academic Researcher'],
+                skills: ['Structured research methods', 'Data interpretation', 'Academic writing'] },
+            business: { name: 'Business & Entrepreneurship',
+                why: 'You show interest in leading, organizing, and building ventures.',
+                careers: ['Entrepreneur', 'Business Analyst', 'Project Manager', 'Marketing Strategist'],
+                skills: ['Basic finance and budgeting', 'Leadership and negotiation', 'Strategic planning'] },
+            design: { name: 'Design & Media',
+                why: 'You\'re drawn to creating things that look, feel, or communicate well.',
+                careers: ['UI/UX Designer', 'Graphic Designer', 'Content Creator', 'Architect'],
+                skills: ['Design fundamentals & tools', 'Visual storytelling', 'Feedback iteration'] },
+            helping: { name: 'Education & Public Service',
+                why: 'You show a consistent pull toward directly helping and supporting people.',
+                careers: ['Teacher', 'Counselor', 'Social Worker', 'Community Organizer'],
+                skills: ['Communication & empathy', 'Conflict resolution', 'Patience under pressure'] },
+            medicine: { name: 'Medicine & Healthcare',
+                why: 'You show curiosity about health, the body, and caring for others.',
+                careers: ['Doctor', 'Nurse', 'Physiotherapist', 'Healthcare Technician'],
+                skills: ['Biology & health sciences fundamentals', 'Attention to detail', 'Composure under pressure'] },
+            education: { name: 'Education & Research',
+                why: 'You\'re drawn to learning deeply and helping others understand things too.',
+                careers: ['Teacher', 'Curriculum Designer', 'Academic Writer', 'Trainer'],
+                skills: ['Subject mastery', 'Explaining complex ideas simply', 'Patience & mentoring'] },
+            engineering: { name: 'Engineering & Skilled Trades',
+                why: 'You show a structured, hands-on problem-solving approach.',
+                careers: ['Mechanical/Civil Engineer', 'Technician', 'Quality Analyst', 'Product Engineer'],
+                skills: ['Technical fundamentals', 'Structured troubleshooting', 'Precision & safety awareness'] }
+        };
+        QUIZ_SCORERS.career = function(aq) {
+            const def = QUIZZES.career;
+            const tally = {};
+            aq.answers.forEach(function(ans, i) { const cluster = def.questions[i].map[ans];
+                tally[cluster] = (tally[cluster] || 0) + 1; });
+            const sorted = Object.entries(tally).sort(function(a, b) { return b[1] - a[1]; });
+            const top = sorted.slice(0, 3).map(function(s) { return s[0]; });
+            const record = { date: new Date().toISOString(), top: top, tally: tally };
+            STATE.careerHistory.push(record);
+            saveState();
+            addXp(35, 'Career Compass complete');
+            renderCareerResult(record);
+        };
+
+        function renderCareerResult(record) {
+            const el = document.getElementById('careerResultArea');
+            el.style.display = 'block';
+            el.innerHTML =
+                '<div class="card" style="margin-bottom:18px;"><div class="eyebrow">Career Fit Map</div><h3 class="section-title">Your answers currently show stronger alignment with:</h3><p class="muted">This is a starting point for exploration — not a directive. Interests can and do shift over time.</p></div><div class="grid grid-3">' +
+                record.top.map(function(key) {
+                    const c = CAREER_CLUSTERS[key];
+                    if (!c) return '';
+                    return '<div class="card hoverable"><h3 style="font-size:15.5px;margin-bottom:6px;">' + c.name +
+                        '</h3><p class="muted" style="margin-bottom:10px;">' + c.why +
+                        '</p><strong style="font-size:12px;">Possible careers</strong><div class="chip-row" style="margin:8px 0 10px;">' +
+                        c.careers.map(function(x) { return '<span class="chip">' + x + '</span>'; }).join(
+                            '') +
+                        '</div><strong style="font-size:12px;">Skills to develop</strong><ul class="muted" style="margin:8px 0 0 16px;font-size:12.5px;">' +
+                        c.skills.map(function(s) { return '<li>' + s + '</li>'; }).join('') +
+                        '</ul></div>';
+                }).join('') +
+                '</div><div class="card" style="margin-top:18px;"><strong>What to explore next</strong><p class="muted" style="margin-top:8px;">Pick one small experiment this month — a short course, a mini project, or an hour shadowing someone in that field — before committing further.</p></div><button class="btn btn-gold" style="margin-top:14px;" onclick="startQuiz(\'career\')">Retake</button>';
+        }
+
+        // =====================================================================
+        // ISLAMIC KNOWLEDGE QUIZ DATA + SCORING
+        // =====================================================================
+        QUIZZES.islamic = {
+            questions: [
+                { category: 'Beliefs', text: 'How many pillars does Islam have?', type: 'mcq', options: ['3', '4', '5',
+                        '6'
+                    ], correct: 2, source: 'Basic belief' },
+                { category: 'Salah', text: 'How many obligatory (Fard) prayers are there in a day?', type: 'mcq',
+                    options: ['3', '4', '5', '6'], correct: 2, source: 'Basic practice' },
+                { category: 'Quran', text: 'Which is the first Surah (chapter) of the Quran?', type: 'mcq',
+                    options: ['Al-Baqarah', 'Al-Fatiha', 'Al-Ikhlas', 'An-Nas'], correct: 1, source: 'Quran' },
+                { category: 'Fasting', text: 'In which month of the Islamic calendar is fasting obligatory?',
+                    type: 'mcq', options: ['Rajab', 'Shawwal', 'Ramadan', 'Muharram'], correct: 2,
+                    source: 'Basic practice' },
+                { category: 'Zakat', text: 'Zakat is generally described as:', type: 'mcq',
+                    options: ['A voluntary charity given anytime',
+                        'An obligatory form of almsgiving for those who meet the threshold',
+                        'A tax paid only during Hajj', 'A punishment for wrongdoing'
+                    ], correct: 1,
+                    source: 'Basic belief (general understanding; specific thresholds/rulings vary by scholarly opinion)'
+                },
+                { category: 'Hajj', text: 'Hajj is performed in which Islamic month?', type: 'mcq',
+                    options: ['Dhul-Hijjah', 'Ramadan', 'Muharram', 'Safar'], correct: 0, source: 'Basic practice' },
+                { category: 'Prophets',
+                    text: 'Which prophet is associated with building the Kaaba along with his son?', type: 'mcq',
+                    options: ['Prophet Musa (AS)', 'Prophet Ibrahim (AS)', 'Prophet Nuh (AS)', 'Prophet Dawud (AS)'],
+                    correct: 1, source: 'Seerah of the Prophets (widely accepted account)' },
+                { category: 'Seerah', text: 'In which city was Prophet Muhammad (PBUH) born?', type: 'mcq',
+                    options: ['Madinah', 'Makkah', 'Ta\'if', 'Jerusalem'], correct: 1, source: 'Seerah' },
+                { category: 'Seerah',
+                    text: 'What was the significant event of the Prophet\'s (PBUH) migration called?', type: 'mcq',
+                    options: ['Hijrah', 'Isra', 'Mi\'raj', 'Ghazwa'], correct: 0, source: 'Seerah' },
+                { category: 'Manners',
+                    text: 'Islamic teaching generally emphasizes which of these toward parents?', type: 'mcq',
+                    options: ['Obedience only if convenient',
+                        'Kindness, respect and care, especially in old age',
+                        'Respect only from sons, not daughters', 'No specific teaching exists'
+                    ], correct: 1, source: 'Islamic ethics — widely taught principle' },
+                { category: 'Beliefs', text: 'The Islamic declaration of faith is called:', type: 'mcq',
+                    options: ['Shahada', 'Sujud', 'Sunnah', 'Sadaqah'], correct: 0, source: 'Basic belief' },
+                { category: 'History',
+                    text: 'The compilation of the Quran into a single written text is most associated with which Caliph\'s era?',
+                    type: 'mcq',
+                    options: ['Caliph Abu Bakr (RA) initiated it; completed under Caliph Uthman (RA)',
+                        'Caliph Ali (RA) alone', 'It was compiled after 300 years',
+                        'It was never compiled in written form'
+                    ], correct: 0, source: 'Islamic history (widely accepted account)' }
+            ]
+        };
+        QUIZ_SCORERS.islamic = function(aq) {
+            const def = QUIZZES.islamic;
+            let correct = 0;
+            const byCat = {};
+            def.questions.forEach(function(q, i) {
+                const isCorrect = aq.answers[i] === q.correct;
+                if (isCorrect) correct++;
+                byCat[q.category] = byCat[q.category] || { right: 0, total: 0 };
+                byCat[q.category].total++;
+                if (isCorrect) byCat[q.category].right++;
+            });
+            const pct = Math.round((correct / def.questions.length) * 100);
+            const weakTopics = Object.entries(byCat).filter(function(e) { return e[1].right / e[1].total < 0.6; }).map(
+                function(e) { return e[0]; });
+            const record = { date: new Date().toISOString(), pct: pct, correct: correct, total: def.questions.length,
+                byCat: byCat, weakTopics: weakTopics };
+            STATE.islamicHistory.push(record);
+            saveState();
+            addXp(35, 'Islamic Knowledge test complete');
+            unlockAchievement('knowledge_seeker');
+            renderIslamicResult(record, aq);
+        };
+
+        function renderIslamicResult(record, aq) {
+            const el = document.getElementById('islamicResultArea');
+            el.style.display = 'block';
+            const def = QUIZZES.islamic;
+            el.innerHTML =
+                '<div class="card" style="text-align:center;margin-bottom:18px;"><div class="eyebrow">Knowledge Test Results</div><div style="display:flex;justify-content:center;margin:14px 0;">' +
+                ringSVG(record.pct, '#59c2b8') + '</div><p class="muted">' + record.correct + ' of ' + record.total +
+                ' correct.</p></div><div class="grid grid-2"><div class="card"><h3 class="section-title" style="font-size:15px;">By Category</h3>' +
+                Object.entries(record.byCat).map(function(e) {
+                    return '<div class="bar-row"><span class="b-label">' + e[0] +
+                        '</span><div class="bar-track"><div class="bar-fill" data-val="' + Math.round(e[1].right /
+                            e[1].total * 100) + '"></div></div><span class="bar-val">' + e[1].right + '/' + e[1]
+                        .total + '</span></div>';
+                }).join('') +
+                '</div><div class="card"><h3 class="section-title" style="font-size:15px;">Review & Sources</h3><div style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">' +
+                def.questions.map(function(q, i) {
+                    const ok = aq.answers[i] === q.correct;
+                    return '<div style="font-size:12.5px;padding:10px;border-radius:10px;background:rgba(255,255,255,.03);border-left:3px solid ' +
+                        (ok ? 'var(--ok)' : 'var(--danger)') + ';"><strong>' + q.text +
+                        '</strong><br><span class="muted">Answer: ' + q.options[q.correct] + ' — <em>' + q
+                        .source + '</em></span></div>';
+                }).join('') + '</div></div></div>' + (record.weakTopics.length ?
+                    '<div class="result-explain" style="margin-top:16px;">Topics worth revisiting: <strong>' + record
+                    .weakTopics.join(', ') + '</strong>.</div>' : '') +
+                '<button class="btn btn-gold" style="margin-top:14px;" onclick="startQuiz(\'islamic\')">Retake</button>';
+            animateRings(el);
+            animateBars(el);
+        }
+
+        // =====================================================================
+        // COGNITIVE CHALLENGE
+        // =====================================================================
+        function svgShapeSeq(shapes) {
+            const cells = shapes.map(function(s, i) {
+                const x = 20 + i * 80;
+                if (s === '?') return '<text x="' + (x + 25) + '" y="55" font-size="30" fill="#d8ab5f" text-anchor="middle" font-family="Manrope" font-weight="800">?</text><rect x="' +
+                    x +
+                    '" y="20" width="60" height="60" rx="10" fill="none" stroke="rgba(255,255,255,.15)" stroke-dasharray="4"/>';
+                let shapeEl = '';
+                if (s.type === 'square') shapeEl = '<rect x="' + (x + 15) + '" y="35" width="30" height="30" fill="' +
+                    s.fill + '" transform="rotate(' + (s.rot || 0) + ' ' + (x + 30) + ' 50)"/>';
+                if (s.type === 'circle') shapeEl = '<circle cx="' + (x + 30) + '" cy="50" r="16" fill="' + s.fill +
+                    '"/>';
+                if (s.type === 'triangle') shapeEl = '<polygon points="' + (x + 30) + ',34 ' + (x + 15) + ',64 ' + (x +
+                    45) + ',64" fill="' + s.fill + '" transform="rotate(' + (s.rot || 0) + ' ' + (x + 30) +
+                    ' 50)"/>';
+                return '<rect x="' + x +
+                    '" y="20" width="60" height="60" rx="10" fill="none" stroke="rgba(255,255,255,.1)"/>' + shapeEl;
+            }).join('');
+            return '<svg width="' + (20 + shapes.length * 80) + '" height="100" viewBox="0 0 ' + (20 + shapes.length * 80) +
+                ' 100">' + cells + '</svg>';
+        }
+        QUIZZES.cognitive = {
+            questions: [
+                { category: 'Verbal', type: 'mcq', text: 'BOOK is to READ as FORK is to:',
+                    options: ['Cut', 'Eat', 'Kitchen', 'Spoon'], correct: 1 },
+                { category: 'Verbal', type: 'mcq', text: 'Choose the word that does NOT belong:',
+                    options: ['Sprint', 'Jog', 'Walk', 'Ocean'], correct: 3 },
+                { category: 'Verbal', type: 'mcq', text: 'CANDID most nearly means:',
+                    options: ['Hidden', 'Honest', 'Angry', 'Confused'], correct: 1 },
+                { category: 'Verbal', type: 'mcq', text: 'LOUD is to QUIET as FAST is to:',
+                    options: ['Speedy', 'Slow', 'Rushed', 'Sudden'], correct: 1 },
+                { category: 'Verbal', type: 'mcq',
+                    text: 'Which word completes: Her explanation was so ___ that everyone understood immediately.',
+                    options: ['Vague', 'Lucid', 'Convoluted', 'Silent'], correct: 1 },
+                { category: 'Verbal', type: 'mcq', text: 'AUTHOR is to BOOK as COMPOSER is to:',
+                    options: ['Piano', 'Symphony', 'Concert', 'Orchestra'], correct: 1 },
+                { category: 'Verbal', type: 'mcq', text: 'Choose the odd one out:',
+                    options: ['Whisper', 'Shout', 'Murmur', 'Chair'], correct: 3 },
+                { category: 'Numerical', type: 'mcq', text: 'What comes next: 2, 4, 8, 16, __?',
+                    options: ['24', '30', '32', '20'], correct: 2 },
+                { category: 'Numerical', type: 'mcq', text: 'What comes next: 1, 1, 2, 3, 5, 8, __?',
+                    options: ['11', '13', '12', '10'], correct: 1 },
+                { category: 'Numerical', type: 'mcq', text: 'If 3 pens cost 45 rupees, how much do 7 pens cost?',
+                    options: ['95', '105', '100', '90'], correct: 1 },
+                { category: 'Numerical', type: 'mcq', text: 'What comes next: 100, 91, 83, 76, __?',
+                    options: ['70', '68', '69', '71'], correct: 0 },
+                { category: 'Numerical', type: 'mcq',
+                    text: 'A train travels 60 km in 45 minutes. What is its speed in km/h?',
+                    options: ['75', '80', '70', '90'], correct: 1 },
+                { category: 'Numerical', type: 'mcq', text: 'What comes next: 5, 10, 20, 40, __?',
+                    options: ['60', '70', '80', '50'], correct: 2 },
+                { category: 'Numerical', type: 'mcq', text: 'Half of 250 plus a quarter of 40 equals:',
+                    options: ['135', '120', '140', '115'], correct: 0 },
+                { category: 'Logical', type: 'mcq',
+                    text: 'All Zeltas are Borgs. Some Borgs are Kaans. Which must be true?',
+                    options: ['All Zeltas are Kaans', 'Some Zeltas may be Kaans', 'No Zeltas are Kaans',
+                        'All Kaans are Zeltas'
+                    ], correct: 1 },
+                { category: 'Logical', type: 'mcq',
+                    text: 'If today is Wednesday, what day will it be in 10 days?',
+                    options: ['Friday', 'Saturday', 'Sunday', 'Monday'], correct: 2 },
+                { category: 'Logical', type: 'mcq',
+                    text: 'A is taller than B. C is shorter than B. Who is the shortest?',
+                    options: ['A', 'B', 'C', 'Cannot be determined'], correct: 2 },
+                { category: 'Logical', type: 'mcq',
+                    text: 'If some Plips are Groks, and no Groks are Fenns, which must be true?',
+                    options: ['No Plips are Fenns', 'Some Plips are not Fenns', 'All Plips are Fenns',
+                        'Cannot be determined for all Plips'
+                    ], correct: 3 },
+                { category: 'Logical', type: 'mcq',
+                    text: 'Three friends: Ali is older than Sara. Sara is older than Zain. Who is the youngest?',
+                    options: ['Ali', 'Sara', 'Zain', 'Cannot be determined'], correct: 2 },
+                { category: 'Logical', type: 'mcq',
+                    text: 'Which number is the odd one out: 15, 27, 36, 44, 81?',
+                    options: ['15', '36', '44', '81'], correct: 2 },
+                { category: 'Logical', type: 'mcq',
+                    text: 'If it rains, the ground gets wet. The ground is wet. Which is valid?',
+                    options: ['It definitely rained', 'It may or may not have rained',
+                        'It definitely did not rain', 'Rain caused the wetness for certain'
+                    ], correct: 1 },
+                { category: 'Non-verbal', type: 'visual', text: 'Which shape completes the pattern?',
+                    svg: svgShapeSeq([{ type: 'circle', fill: '#6b74e8' }, { type: 'circle', fill: '#6b74e8' },
+                        { type: 'circle', fill: '#6b74e8' }, '?'
+                    ]), options: ['A circle', 'A square', 'A triangle', 'Nothing'], correct: 0 },
+                { category: 'Non-verbal', type: 'visual',
+                    text: 'The square rotates 45 degrees each step. What comes next?',
+                    svg: svgShapeSeq([{ type: 'square', rot: 0, fill: '#d8ab5f' }, { type: 'square', rot: 45,
+                        fill: '#d8ab5f' }, { type: 'square', rot: 90, fill: '#d8ab5f' }, '?']),
+                    options: ['Rotated 135°', 'Rotated 0°', 'Rotated 200°', 'A circle instead'], correct: 0 },
+                { category: 'Non-verbal', type: 'visual',
+                    text: 'Which shape is the odd one out in this row?',
+                    svg: svgShapeSeq([{ type: 'triangle', rot: 0, fill: '#59c2b8' }, { type: 'triangle', rot: 0,
+                        fill: '#59c2b8' }, { type: 'circle', fill: '#d97f83' }, { type: 'triangle',
+                        rot: 0, fill: '#59c2b8' }
+                    ]), options: ['1st shape', '2nd shape', '3rd shape (circle)', '4th shape'], correct: 2 },
+                { category: 'Non-verbal', type: 'visual',
+                    text: 'The shape alternates circle-square-circle-square. What comes next?',
+                    svg: svgShapeSeq([{ type: 'circle', fill: '#6b74e8' }, { type: 'square', rot: 0,
+                        fill: '#6b74e8' }, { type: 'circle', fill: '#6b74e8' }, '?']),
+                    options: ['A square', 'A circle', 'A triangle', 'Nothing'], correct: 0 }
+            ]
+        };
+        QUIZ_SCORERS.cognitive = function(aq) {
+            const def = QUIZZES.cognitive;
+            let correct = 0;
+            const byCat = {};
+            def.questions.forEach(function(q, i) {
+                const ok = aq.answers[i] === q.correct;
+                if (ok) correct++;
+                byCat[q.category] = byCat[q.category] || { right: 0, total: 0 };
+                byCat[q.category].total++;
+                if (ok) byCat[q.category].right++;
+            });
+            const accuracy = Math.round((correct / def.questions.length) * 100);
+            const seconds = Math.round((Date.now() - aq.startTime) / 1000);
+            const record = { date: new Date().toISOString(), correct: correct, total: def.questions.length,
+                accuracy: accuracy, seconds: seconds, byCat: byCat };
+            STATE.cognitiveHistory.push(record);
+            saveState();
+            addXp(45, 'Cognitive Challenge complete');
+            unlockAchievement('brain_challenger');
+            renderCognitiveResult(record);
+        };
+
+        function renderCognitiveResult(record) {
+            const el = document.getElementById('cognitiveResultArea');
+            el.style.display = 'block';
+            let encourage = 'Solid, well-rounded performance across categories.';
+            if (record.accuracy < 50)
+                encourage =
+                'A single test does not define your intelligence or your future. Cognitive skills can be developed, and this result only reflects performance on this particular challenge, today.';
+            else if (record.accuracy < 75)
+                encourage =
+                'A reasonable result with clear room to sharpen specific categories — cognitive skills grow with practice.';
+            el.innerHTML =
+                '<div class="card" style="text-align:center;margin-bottom:18px;"><div class="eyebrow">Cognitive Challenge Results</div><div style="display:flex;justify-content:center;margin:14px 0;">' +
+                ringSVG(record.accuracy, '#d8ab5f') + '</div><p class="muted">' + record.correct + ' / ' + record.total +
+                ' correct — completed in ' + record.seconds +
+                's</p><div class="result-explain" style="text-align:left;max-width:560px;margin:16px auto 0;">' +
+                encourage + '</div></div><div class="card"><h3 class="section-title" style="font-size:15px;">Category Performance</h3>' +
+                Object.entries(record.byCat).map(function(e) {
+                    return '<div class="bar-row"><span class="b-label">' + e[0] +
+                        '</span><div class="bar-track"><div class="bar-fill" data-val="' + Math.round(e[1].right /
+                            e[1].total * 100) + '"></div></div><span class="bar-val">' + e[1].right + '/' + e[1]
+                        .total + '</span></div>';
+                }).join('') +
+                '</div><button class="btn btn-gold" style="margin-top:14px;" onclick="startQuiz(\'cognitive\')">Retake</button>';
+            animateRings(el);
+            animateBars(el);
+        }
+
+        // =====================================================================
+        // MONEY SAVER
+        // =====================================================================
+        function calcMoney() {
+            const income = parseFloat(document.getElementById('mIncome').value);
+            const fixed = parseFloat(document.getElementById('mFixed').value) || 0;
+            const varE = parseFloat(document.getElementById('mVar').value) || 0;
+            const current = parseFloat(document.getElementById('mCurrent').value) || 0;
+            const goal = parseFloat(document.getElementById('mGoal').value);
+            const dateStr = document.getElementById('mDate').value;
+            if (!income || !goal) { showToast('Missing info',
+                'Please enter at least your income and savings goal.', 'error'); return; }
+            const monthlySpend = fixed + varE;
+            const estMonthlySaving = Math.max(0, income - monthlySpend);
+            const remaining = Math.max(0, goal - current);
+            const progressPct = Math.min(100, Math.round((current / goal) * 100));
+            let monthsToTarget = null;
+            if (dateStr) {
+                const now = new Date();
+                const target = new Date(dateStr);
+                monthsToTarget = Math.max(1, Math.round((target - now) / (1000 * 60 * 60 * 24 * 30)));
+            }
+            const requiredMonthly = monthsToTarget ? Math.ceil(remaining / monthsToTarget) : estMonthlySaving;
+            const plan = { currency: 'Rs. ', income: income, monthlySpend: monthlySpend, estMonthlySaving: estMonthlySaving,
+                current: current, goal: goal, remaining: remaining, progressPct: progressPct,
+            date: new Date().toISOString() };
+            STATE.moneyPlan = plan;
+            saveState();
+            addXp(30, 'Savings plan built');
+            unlockAchievement('smart_saver');
+            const fastMonths = Math.max(1, Math.ceil(remaining / ((estMonthlySaving * 1.5) || 1)));
+            const balancedMonths = Math.max(1, Math.ceil(remaining / (estMonthlySaving || 1)));
+            const easyMonths = Math.max(1, Math.ceil(remaining / ((estMonthlySaving * 0.6) || 1)));
+            const card = document.getElementById('moneyResultCard');
+            card.style.display = 'block';
+            card.innerHTML =
+                '<div class="eyebrow">Your Savings Snapshot</div><div style="display:flex;justify-content:center;margin:14px 0;">' +
+                ringSVG(progressPct, '#59c2b8', 150) +
+                '</div><div class="grid grid-2" style="margin-top:10px;"><div class="stat-mini"><span class="val">Rs. ' +
+                monthlySpend.toLocaleString() +
+                '</span><span class="lbl">Monthly Spending</span></div><div class="stat-mini"><span class="val">Rs. ' +
+                estMonthlySaving.toLocaleString() +
+                '</span><span class="lbl">Est. Monthly Saving</span></div><div class="stat-mini"><span class="val">Rs. ' +
+                remaining.toLocaleString() +
+                '</span><span class="lbl">Remaining to Goal</span></div><div class="stat-mini"><span class="val">' + (
+                    requiredMonthly ? ('Rs. ' + requiredMonthly.toLocaleString()) : '—') +
+                '</span><span class="lbl">Required Monthly (for your date)</span></div></div><div class="divider"></div><strong style="font-size:13px;">Where you might reduce spending</strong><p class="muted" style="margin-top:6px;">Your variable expenses are Rs. ' +
+                varE.toLocaleString() + ' against fixed costs of Rs. ' + fixed.toLocaleString() + '. ' + (varE > fixed ?
+                    'Variable spending is your largest lever — even a 10 to 15 percent trim here moves your date up meaningfully.' :
+                    'Your spending is fairly fixed-cost heavy — look for one recurring subscription or habit you can pause.'
+                    ) + '</p>';
+            animateRings(card);
+            const plansCard = document.getElementById('moneyPlansCard');
+            plansCard.style.display = 'block';
+            plansCard.innerHTML =
+                '<div class="eyebrow">Choose Your Pace</div><div class="grid grid-3"><div class="card" style="background:rgba(216,171,95,.06);"><h3 style="font-size:15px;">Fast Plan</h3><p class="muted" style="margin:8px 0;">Save Rs. ' +
+                Math.ceil(estMonthlySaving * 1.5).toLocaleString() +
+                '/month</p><p class="small-note">Reaches your goal in about ' + fastMonths +
+                ' month(s). Requires cutting variable spending noticeably.</p></div><div class="card" style="background:rgba(107,116,232,.06);"><h3 style="font-size:15px;">Balanced Plan</h3><p class="muted" style="margin:8px 0;">Save Rs. ' +
+                Math.ceil(estMonthlySaving).toLocaleString() +
+                '/month</p><p class="small-note">Reaches your goal in about ' + balancedMonths +
+                ' month(s) at your current spending pattern.</p></div><div class="card" style="background:rgba(89,194,184,.06);"><h3 style="font-size:15px;">Easy Plan</h3><p class="muted" style="margin:8px 0;">Save Rs. ' +
+                Math.ceil(estMonthlySaving * 0.6).toLocaleString() +
+                '/month</p><p class="small-note">Reaches your goal in about ' + easyMonths +
+                ' month(s) — gentler pace, more breathing room.</p></div></div><div class="small-note" style="margin-top:14px;">This plan is calculated only from the numbers you entered. For major financial decisions, consult a qualified financial advisor.</div>';
+        }
+
+        // =====================================================================
+        // WELLNESS PLANNER
+        // =====================================================================
+        function genWellness() {
+            const age = getGroupValue('wAge'),
+                goal = getGroupValue('wGoal'),
+                activity = getGroupValue('wActivity'),
+                sleep = getGroupValue('wSleep'),
+                time = getGroupValue('wTime');
+            if (!age || !goal || !activity || !sleep || !time) { showToast('A few more taps',
+                    'Please select an option in each category.', 'error'); return; }
+            const isMinor = age === 'teen';
+            const movement = { '15': 'a brisk 15-minute walk or a short bodyweight circuit',
+                '30': 'a 30-minute walk, light jog, or home workout',
+                '60': 'a fuller 45 to 60 minute session mixing cardio and strength' } [time];
+            const routine = [
+                'Wake at a consistent time daily — even a fixed window helps your body regulate energy.',
+                'Movement: ' + movement + ', most days of the week.',
+                'Hydration: keep water nearby and sip through the day rather than large amounts at once.',
+                sleep === 'low' ?
+                'Sleep is your biggest lever right now — aim to shift bedtime 15 minutes earlier each week until you reach 7 to 9 hours.' :
+                'Protect your current sleep window — consistency matters as much as duration.',
+                isMinor ?
+                'As a general guide for your age group: focus on balanced meals, regular movement, and enough sleep rather than any specific weight or calorie target.' :
+                'Balanced eating principle: build meals around protein, vegetables, and whole grains rather than counting to extremes.',
+                'Rest: build in at least one lighter, lower-intensity day per week to recover.'
+            ];
+            const plan = { age: age, goal: goal, activity: activity, sleep: sleep, time: time, routine: routine,
+                date: new Date().toISOString() };
+            STATE.wellnessPlan = plan;
+            saveState();
+            addXp(20, 'Wellness routine generated');
+            const el = document.getElementById('wellnessResult');
+            el.style.display = 'block';
+            el.innerHTML = '<div class="card"><div class="eyebrow">Your General Routine</div><h3 class="section-title">Built around a ' +
+                goal.replace(/^./, function(c) { return c.toUpperCase(); }) + ' goal</h3>' + routine.map(function(r,
+                    i) {
+                    return '<div class="rule-item"><span class="r-num">' + (i + 1) +
+                        '</span><span class="r-text">' + r + '</span></div>';
+                }).join('') +
+                '<div class="small-note" style="margin-top:10px;">This is general lifestyle guidance, not medical treatment. For any medical condition, injury, or significant health concern, please speak with a qualified healthcare professional.</div></div>';
+        }
+
+        // =====================================================================
+        // GOAL ROADMAP
+        // =====================================================================
+        function genRoadmap() {
+            const goal = document.getElementById('gGoal').value.trim();
+            const why = document.getElementById('gWhy').value.trim();
+            const level = getGroupValue('gLevel');
+            const time = getGroupValue('gTime');
+            const deadline = document.getElementById('gDeadline').value;
+            const obstacle = document.getElementById('gObstacle').value.trim();
+            const quitReason = document.getElementById('gQuit').value.trim();
+            if (!goal || !level || !time) { showToast('A bit more detail',
+                    'Please enter your goal and pick your level and time available.', 'error'); return; }
+            const weeks = deadline ? Math.max(2, Math.round((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24 * 7))) :
+            8;
+            const milestoneCount = Math.min(6, Math.max(3, Math.round(weeks / 4)));
+            const stageNames = ['foundation', 'core skill', 'first project', 'refinement', 'application', 'mastery check'];
+            const milestones = Array.from({ length: milestoneCount }, function(_, i) { return 'Milestone ' + (i + 1) +
+                    ': Reach the ' + (stageNames[i] || 'next') + ' stage of "' + goal + '".'; });
+            const plan = { goal: goal, why: why, level: level, time: time, deadline: deadline, obstacle: obstacle,
+                quitReason: quitReason, weeks: weeks, milestones: milestones, date: new Date().toISOString() };
+            STATE.goalPlan = plan;
+            saveState();
+            addXp(30, 'Goal Roadmap built');
+            unlockAchievement('goal_builder');
+            const el = document.getElementById('goalResult');
+            el.style.display = 'block';
+            const timeLabel = time === '30' ? 'about 30 minutes' : time === '60' ? 'about 1 hour' : '2 or more hours';
+            el.innerHTML =
+                '<div class="card" style="margin-bottom:16px;"><div class="eyebrow">Risk-Aware Roadmap</div><h3 class="section-title">' +
+                escapeHtml(goal) + '</h3><p class="muted">' + (why ? 'Why: ' + escapeHtml(why) : '') +
+                '</p></div><div class="grid grid-2"><div class="card"><strong style="font-size:13px;">Milestones</strong>' +
+                milestones.map(function(m, i) { return '<div class="rule-item"><span class="r-num">' + (i + 1) +
+                        '</span><span class="r-text">' + m + '</span></div>'; }).join('') +
+                '</div><div class="card"><strong style="font-size:13px;">Weekly & Daily Actions</strong><p class="muted" style="margin:8px 0;">With ' +
+                timeLabel +
+                ' available daily, focus each week on one milestone. Break that into a single daily action small enough that "not enough time today" isn\'t a real excuse.</p><div class="divider"></div><strong style="font-size:13px;">If you miss a day</strong><p class="muted" style="margin:6px 0;">Don\'t restart the whole plan. Just resume tomorrow\'s daily action.</p><strong style="font-size:13px;">If you miss a week</strong><p class="muted" style="margin:6px 0;">Recovery plan: cut this week\'s milestone in half and refocus only on the minimum viable progress.</p></div></div><div class="card" style="margin-top:16px;"><strong style="font-size:13px;">What could get in the way</strong><p class="muted" style="margin-top:8px;">' +
+                (obstacle ? 'You flagged: ' + escapeHtml(obstacle) + '. ' : '') + (quitReason ?
+                    'You tend to quit when: ' + escapeHtml(quitReason) +
+                    ' — plan a specific response for exactly that moment now, while you are motivated.' : '') +
+                '</p><div class="result-explain">This roadmap does not promise a guaranteed outcome — some obstacles are outside your control. What it gives you is a plan for the part that is: consistency over perfection.</div></div><button class="btn btn-gold" style="margin-top:14px;" onclick="document.getElementById(\'goalForm\').scrollIntoView({behavior:\'smooth\'})">Edit Goal</button>';
+        }
+
+        // =====================================================================
+        // LIFE ADVISORY
+        // =====================================================================
+        const ADVISORY_TOPICS = ['Stress', 'Worry', 'Low motivation', 'Feeling overwhelmed', 'Procrastination',
+            'Failure / setback', 'Confusion', 'Relationship difficulty', 'Academic pressure', 'Career uncertainty',
+            'Financial pressure', 'Loss of confidence'
+        ];
+        const ADVISORY_CONTENT = {
+            'Stress': { steps: ['Name what specifically is stressing you — vague stress feels bigger than specific stress.',
+                    'Take 5 slow breaths before reacting to anything right now.'
+                ], habits: ['Build one predictable low-stress block into each day.',
+                'Reduce one avoidable commitment this week.'] },
+            'Worry': { steps: ['Write the worry down, then write what is actually in your control about it.',
+                    'Set a specific 10-minute worry window instead of carrying it all day.'
+                ], habits: ['Practice separating rehearsing a problem from actually solving it.',
+                'Talk it through with someone you trust.'] },
+            'Low motivation': { steps: ['Shrink the task to the smallest possible first step — 2 minutes, not 2 hours.',
+                    'Start before you feel ready; motivation often follows action.'
+                ], habits: ['Track small wins daily to rebuild momentum.', 'Revisit your reason for the goal.'] },
+            'Feeling overwhelmed': {
+                steps: ['List everything on your mind, then pick exactly one thing to do next.',
+                    'Let go of everything else for the next hour on purpose.'
+                ],
+                habits: ['Break big tasks into smaller ones by default.', 'Protect one recovery block in your week.']
+            },
+            'Procrastination': {
+                steps: ['Identify what you are actually avoiding — boredom, fear of failing, or an unclear next step.',
+                    'Commit to just 5 minutes of the task, no more required.'
+                ],
+                habits: ['Remove the friction that makes starting harder than it needs to be.',
+                    'Pair the task with something you enjoy.'
+                ]
+            },
+            'Failure / setback': {
+                steps: ['Separate the outcome from your worth — a failed attempt is not a failed person.',
+                    'Write down one honest lesson from what happened.'
+                ],
+                habits: ['Review setbacks weekly instead of dwelling in the moment.',
+                'Try again with one adjustment.'] },
+            'Confusion': {
+                steps: ['Write the actual question you are trying to answer, as plainly as possible.',
+                    'Talk it through with someone rather than only in your head.'
+                ],
+                habits: ['Give yourself permission to not decide immediately.',
+                'Gather one more piece of information before deciding.'] },
+            'Relationship difficulty': {
+                steps: ['Consider the situation from the other person\'s side, briefly, before responding.',
+                    'Choose one honest, calm sentence to say rather than everything at once.'
+                ],
+                habits: ['Practice repairing quickly after conflict rather than letting it sit.',
+                'Ask, do not assume.'] },
+            'Academic pressure': {
+                steps: ['Identify the one subject or task causing the most pressure right now.',
+                    'Break your next study session into a single, specific, doable target.'
+                ],
+                habits: ['Use the Study Planner to turn pressure into a concrete plan.',
+                'Protect sleep — pressure and exhaustion compound each other.'] },
+            'Career uncertainty': {
+                steps: ['List what you do know for certain about your interests, even small things.',
+                    'Try one small experiment this month instead of trying to decide forever.'
+                ],
+                habits: ['Use the Career Compass to explore, not to decide permanently.',
+                'Talk to one person already working in a field you are curious about.'] },
+            'Financial pressure': {
+                steps: ['Write down the exact numbers — vague financial worry is heavier than the real numbers usually are.',
+                    'Identify the single most useful next action, even if small.'
+                ],
+                habits: ['Use the Money Saver planner to build a concrete plan.',
+                'Avoid big financial decisions made purely from anxiety.'] },
+            'Loss of confidence': {
+                steps: ['List three things you have handled well before, even small ones.',
+                    'Choose one small, winnable action today to rebuild proof to yourself.'
+                ],
+                habits: ['Track small wins deliberately for two weeks.',
+                'Separate a single mistake from your overall capability.'] }
+        };
+        let selectedAdvisoryTopic = null;
+
+        function renderAdvisoryTopics() {
+            const box = document.getElementById('advisoryTopics');
+            if (box) box.innerHTML = ADVISORY_TOPICS.map(function(t) { return '<button class="chip selectable" data-t="' +
+                    t + '">' + t + '</button>'; }).join('');
+        }
+        renderAdvisoryTopics();
+        const advTopicsEl = document.getElementById('advisoryTopics');
+        if (advTopicsEl) advTopicsEl.addEventListener('click', function(e) {
+            const c = e.target.closest('.chip');
+            if (!c) return;
+            document.querySelectorAll('#advisoryTopics .chip').forEach(function(x) { x.classList.remove(
+                'selected'); });
+            c.classList.add('selected');
+            selectedAdvisoryTopic = c.dataset.t;
+        });
+        const CRISIS_WORDS = ['suicide', 'kill myself', 'end my life', 'self harm', 'self-harm', 'hurt myself',
+            'want to die', 'no reason to live'
+        ];
+
+        function genAdvisory() {
+            const context = document.getElementById('advContext').value.trim();
+            if (!selectedAdvisoryTopic) { showToast('Pick a topic',
+                'Select what best fits what you are feeling.', 'error'); return; }
+            const lower = (context || '').toLowerCase();
+            const crisis = CRISIS_WORDS.some(function(w) { return lower.includes(w); });
+            const content = ADVISORY_CONTENT[selectedAdvisoryTopic];
+            const el = document.getElementById('advisoryResult');
+            el.style.display = 'block';
+            let crisisBlock = '';
+            if (crisis) {
+                crisisBlock =
+                    '<div class="card" style="border-color:rgba(226,104,95,.5);background:rgba(226,104,95,.08);margin-bottom:16px;"><strong style="color:#f0a19b;">You matter, and this deserves real support right now.</strong><p class="muted" style="margin-top:8px;">Please reach out immediately to a trusted adult, a mental-health professional, or a local emergency or crisis line — you do not have to carry this alone. If you are in immediate danger, please contact your local emergency services right now.</p></div>';
+            }
+            STATE.advisoryHistory.push({ date: new Date().toISOString(), topic: selectedAdvisoryTopic, context: context });
+            saveState();
+            addXp(15, null);
+            el.innerHTML = crisisBlock +
+                '<div class="card"><div class="eyebrow">' + selectedAdvisoryTopic +
+                '</div><p class="muted" style="margin-bottom:14px;">It\'s okay to be dealing with this. Here is a grounded starting point:</p><strong style="font-size:13px;">Immediate small steps</strong><div style="margin:8px 0 14px;">' +
+                content.steps.map(function(s, i) { return '<div class="rule-item"><span class="r-num">' + (i + 1) +
+                        '</span><span class="r-text">' + s + '</span></div>'; }).join('') +
+                '</div><strong style="font-size:13px;">Longer-term habits</strong><div style="margin:8px 0 14px;">' +
+                content.habits.map(function(s, i) { return '<div class="rule-item"><span class="r-num">' + (i + 1) +
+                        '</span><span class="r-text">' + s + '</span></div>'; }).join('') +
+                '</div><div class="small-note">This is supportive guidance, not therapy or a clinical diagnosis. If this feeling is persistent, intense, or affecting your daily life, please consider speaking with a qualified mental-health professional.</div></div>';
+        }
+
+        // =====================================================================
+        // STUDY PLANNER
+        // =====================================================================
+        let subjectRowCount = 0;
+
+        function addSubjectRow() {
+            subjectRowCount++;
+            const id = 'subj-' + subjectRowCount;
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.style.marginBottom = '12px';
+            div.id = id;
+            div.innerHTML =
+                '<div class="grid grid-4"><div class="field" style="margin-bottom:0;"><label class="field-label">Subject</label><input type="text" class="subj-name" placeholder="e.g. Mathematics"></div><div class="field" style="margin-bottom:0;"><label class="field-label">Month 1 %</label><input type="number" class="subj-m1" placeholder="62"></div><div class="field" style="margin-bottom:0;"><label class="field-label">Month 2 %</label><input type="number" class="subj-m2" placeholder="68"></div><div class="field" style="margin-bottom:0;"><label class="field-label">Month 3 %</label><input type="number" class="subj-m3" placeholder="72"></div></div><button class="btn btn-ghost" style="margin-top:10px;" onclick="document.getElementById(\'' +
+                id + '\').remove()">Remove</button>';
+            document.getElementById('subjectRows').appendChild(div);
+        }
+
+        function genStudyPlan() {
+            const target = parseFloat(document.getElementById('sTarget').value);
+            const examDate = document.getElementById('sDate').value;
+            if (!target) { showToast('Missing target', 'Please enter your target percentage.', 'error'); return; }
+            const rows = Array.from(document.querySelectorAll('#subjectRows .card'));
+            const subjects = rows.map(function(r) {
+                const name = r.querySelector('.subj-name').value.trim();
+                const m1 = parseFloat(r.querySelector('.subj-m1').value);
+                const m2 = parseFloat(r.querySelector('.subj-m2').value);
+                const m3 = parseFloat(r.querySelector('.subj-m3').value);
+                if (!name || isNaN(m1) || isNaN(m2) || isNaN(m3)) return null;
+                const trend = (m3 > m2 && m2 >= m1) ? 'Improving' : (m3 < m2 ? 'Needs attention' : 'Steady');
+                return { name: name, m1: m1, m2: m2, m3: m3, trend: trend };
+            }).filter(Boolean);
+            if (!subjects.length) { showToast('Add subjects',
+                    'Fill in at least one subject with three months of marks.', 'error'); return; }
+            const current = Math.round(subjects.reduce(function(a, s) { return a + s.m3; }, 0) / subjects.length);
+            const gap = Math.max(0, target - current);
+            const priority = subjects.slice().sort(function(a, b) { return a.m3 - b.m3; });
+            const plan = { target: target, current: current, gap: gap, subjects: subjects, examDate: examDate,
+                date: new Date().toISOString() };
+            STATE.studyPlan = plan;
+            saveState();
+            addXp(30, 'Study Roadmap built');
+            unlockAchievement('study_strategist');
+            const el = document.getElementById('studyResult');
+            el.style.display = 'block';
+            const daysLeft = examDate ? Math.max(0, Math.round((new Date(examDate) - new Date()) / 86400000)) : '—';
+            el.innerHTML =
+                '<div class="card" style="margin-bottom:16px;"><div class="eyebrow">Smart Study Roadmap</div><div class="grid grid-4"><div class="stat-mini"><span class="val">' +
+                target + '%</span><span class="lbl">Target</span></div><div class="stat-mini"><span class="val">' +
+                current + '%</span><span class="lbl">Current</span></div><div class="stat-mini"><span class="val">' + gap +
+                'pp</span><span class="lbl">Gap</span></div><div class="stat-mini"><span class="val">' + daysLeft +
+                '</span><span class="lbl">Days Left</span></div></div></div><div class="grid grid-2"><div class="card"><strong style="font-size:13px;">Subject Trends</strong>' +
+                subjects.map(function(s) {
+                    return '<div class="bar-row"><span class="b-label">' + escapeHtml(s.name) +
+                        '</span><div class="bar-track"><div class="bar-fill" data-val="' + s.m3 +
+                        '"></div></div><span class="bar-val">' + s.m3 +
+                        '%</span></div><div class="small-note" style="margin:-6px 0 10px 122px;">' + s.m1 +
+                        '% -> ' + s.m2 + '% -> ' + s.m3 + '% - ' + s.trend + '</div>';
+                }).join('') +
+                '</div><div class="card"><strong style="font-size:13px;">Priority Order (weakest first)</strong>' +
+                priority.map(function(s, i) { return '<div class="rule-item"><span class="r-num">' + (i + 1) +
+                        '</span><span class="r-text">' + escapeHtml(s.name) + ' — currently ' + s.m3 + '%, ' + s
+                        .trend.toLowerCase() + '</span></div>'; }).join('') +
+                '<div class="result-explain">Weekly targets: raise your lowest subject by 2 to 3 points per week through focused revision; maintain your strongest subjects with lighter practice. Avoid sacrificing sleep to fit in extra hours — tired study is inefficient study.</div></div></div><button class="btn btn-gold" style="margin-top:14px;" onclick="window.print()">Print Roadmap</button>';
+            animateBars(el);
+        }
+
+        // =====================================================================
+        // STRENGTHS & WEAKNESSES
+        // =====================================================================
+        function renderStrengths() {
+            unlockAchievement('strength_finder');
+            const el = document.getElementById('swContent');
+            const strengths = [];
+            const growth = [];
+            if (STATE.lifeHistory.length) {
+                const last = STATE.lifeHistory[STATE.lifeHistory.length - 1];
+                strengths.push({ title: last.strongest,
+                    ev: 'From your latest Life Analysis, scored ' + last.scores[last.strongest] + '/100.',
+                    ex: 'Write down one way you will use this strength deliberately this week.' });
+                growth.push({ title: last.weakest,
+                    ev: 'From your latest Life Analysis, scored ' + last.scores[last.weakest] + '/100.',
+                    ex: 'Pick one 10-minute action in this area to repeat daily for a week.' });
+            }
+            if (STATE.personalityHistory.length) {
+                const last = STATE.personalityHistory[STATE.personalityHistory.length - 1];
+                const top = Object.entries(last.scores).sort(function(a, b) { return b[1] - a[1]; })[0];
+                strengths.push({ title: top[0],
+                    ev: 'Your Personality Explorer scored this trait at ' + top[1] + '/100.',
+                    ex: 'Lean into a task or setting this week that plays to this trait.' });
+            }
+            if (STATE.careerHistory.length) {
+                const last = STATE.careerHistory[STATE.careerHistory.length - 1];
+                const cName = (CAREER_CLUSTERS[last.top[0]] && CAREER_CLUSTERS[last.top[0]].name) || last.top[0];
+                strengths.push({ title: cName, ev: 'Your Career Compass consistently pointed here.',
+                    ex: 'Try one small project or exercise related to this field this month.' });
+            }
+            if (STATE.cognitiveHistory.length) {
+                const last = STATE.cognitiveHistory[STATE.cognitiveHistory.length - 1];
+                const catsSorted = Object.entries(last.byCat).sort(function(a, b) { return (b[1].right / b[1].total) - (a[
+                    1].right / a[1].total); });
+                strengths.push({ title: catsSorted[0][0] + ' reasoning',
+                    ev: 'Your strongest category in the Cognitive Challenge.',
+                    ex: 'Try a slightly harder puzzle in this category to keep building it.' });
+                growth.push({ title: catsSorted[catsSorted.length - 1][0] + ' reasoning',
+                    ev: 'Your development opportunity in the Cognitive Challenge.',
+                    ex: 'Practice a few puzzles in this category weekly — this is trainable, not fixed.' });
+            }
+            if (!strengths.length && !growth.length) {
+                el.innerHTML =
+                    '<div class="card" style="grid-column:1/-1;text-align:center;"><p class="muted">Complete a few modules — Life Analysis, Personality, Career Compass, or Cognitive Challenge — and your strengths picture will build itself here.</p><button class="btn btn-gold" style="margin-top:12px;" onclick="navigateTo(\'life\')">Start Life Analysis</button></div>';
+                return;
+            }
+            el.innerHTML =
+                '<div class="card"><h3 class="section-title" style="font-size:16px;">Your Strengths</h3>' + strengths.map(
+                    function(s) {
+                        return '<div class="sw-card strength" style="margin-bottom:12px;"><strong>' + s.title +
+                            '</strong><p class="muted" style="margin-top:6px;font-size:12.5px;">' + s.ev +
+                            '</p><p class="small-note" style="margin-top:6px;">Try: ' + s.ex + '</p></div>';
+                    }).join('') +
+                '</div><div class="card"><h3 class="section-title" style="font-size:16px;">Development Opportunities</h3>' +
+                (growth.length ? growth.map(function(s) {
+                    return '<div class="sw-card growth" style="margin-bottom:12px;"><strong>' + s.title +
+                        '</strong><p class="muted" style="margin-top:6px;font-size:12.5px;">' + s.ev +
+                        '</p><p class="small-note" style="margin-top:6px;">Try: ' + s.ex + '</p></div>';
+                }).join('') : '<p class="muted">Complete more modules to see development opportunities here.</p>') +
+            '</div>';
+        }
+
+        // =====================================================================
+        // YOUR LIFE, YOUR RULES
+        // =====================================================================
+        function renderRules() {
+            const list = document.getElementById('rulesList');
+            const sorted = STATE.rules.slice().sort(function(a, b) { return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0); });
+            list.innerHTML = sorted.map(function(r, i) {
+                return '<div class="rule-item ' + (r.pinned ? 'pinned' : '') + '"><span class="r-num">' + (i + 1) +
+                    '</span><span class="r-text">' + escapeHtml(r.text) +
+                    '</span><div class="rule-actions"><button title="Pin" onclick="pinRule(' + r.id + ')">' + (r.pinned ?
+                        '📌' : '📍') + '</button><button title="Edit" onclick="editRule(' + r.id +
+                    ')">✎</button><button title="Delete" onclick="deleteRule(' + r.id +
+                    ')">✕</button></div></div>';
+            }).join('') || '<p class="muted">No rules yet — add your first one.</p>';
+        }
+
+        function addRule() {
+            const input = document.getElementById('ruleInput');
+            const v = input.value.trim();
+            if (!v) { showToast('Empty rule', 'Write a short rule before adding it.', 'error'); return; }
+            STATE.rules.push({ id: Date.now(), text: v, pinned: false });
+            saveState();
+            input.value = '';
+            renderRules();
+            addXp(10, null);
+        }
+
+        function pinRule(id) {
+            const r = STATE.rules.find(function(x) { return x.id === id; });
+            if (r) { r.pinned = !r.pinned;
+                saveState();
+                renderRules(); }
+        }
+
+        function deleteRule(id) {
+            STATE.rules = STATE.rules.filter(function(x) { return x.id !== id; });
+            saveState();
+            renderRules();
+        }
+
+        function editRule(id) {
+            const r = STATE.rules.find(function(x) { return x.id === id; });
+            if (!r) return;
+            const val = prompt('Edit your rule:', r.text);
+            if (val && val.trim()) { r.text = val.trim();
+                saveState();
+                renderRules(); }
+        }
+
+        function buildPersonalCode() {
+            if (!STATE.rules.length) { showToast('Add rules first',
+                'Write a few personal rules before building your code.', 'error'); return; }
+            const pinned = STATE.rules.filter(function(r) { return r.pinned; });
+            const base = pinned.length ? pinned : STATE.rules.slice(0, 5);
+            STATE.personalCode = { rules: base.map(function(r) { return r.text; }), date: new Date().toISOString() };
+            saveState();
+            addXp(25, 'Personal Code built');
+            unlockAchievement('growth_mindset');
+            const el = document.getElementById('personalCodeResult');
+            el.style.display = 'block';
+            el.innerHTML =
+                '<div class="card"><div class="eyebrow">My Personal Code</div><p class="muted" style="margin-bottom:14px;">Built from the principles you chose — grounded in honesty, responsibility, respect and personal growth.</p>' +
+                base.map(function(r, i) { return '<div class="rule-item"><span class="r-num">' + (i + 1) +
+                        '</span><span class="r-text">' + escapeHtml(r.text) + '</span></div>'; }).join('') +
+            '</div>';
+        }
+
+        // =====================================================================
+        // MY MUSIC PLAYER
+        // =====================================================================
+        let musicTracks = [];
+        let musicIndex = -1;
+        let musicShuffle = false;
+        let musicRepeat = false;
+        const audioEl = new Audio();
+        document.getElementById('musicInput').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            files.forEach(function(f) {
+                musicTracks.push({ name: f.name.replace(/\.[^/.]+$/, ''), url: URL.createObjectURL(f) });
+            });
+            renderPlaylist();
+            if (musicIndex === -1 && musicTracks.length) { loadTrack(0); }
+            showToast('Tracks added', files.length + ' file(s) loaded — playing straight from your device.',
+        'success');
+        });
+
+        function renderPlaylist(filter) {
+            filter = filter || '';
+            const box = document.getElementById('playlistBox');
+            const filtered = musicTracks.map(function(t, i) { return Object.assign({}, t, { i: i }); }).filter(function(
+                t) { return t.name.toLowerCase().includes(filter.toLowerCase()); });
+            box.innerHTML = filtered.map(function(t) {
+                return '<div class="playlist-item ' + (t.i === musicIndex ? 'playing' : '') +
+                    '" onclick="loadTrack(' + t.i + ');musicPlay();"><span class="pl-name">' + (t.i + 1) + '. ' +
+                    escapeHtml(t.name) +
+                    '</span><button onclick="event.stopPropagation();removeTrack(' + t.i +
+                    ')" style="background:none;border:none;color:var(--text-lo);">✕</button></div>';
+            }).join('') || '<p class="muted">No tracks yet — choose audio files above.</p>';
+        }
+        document.getElementById('playlistSearch').addEventListener('input', function(e) { renderPlaylist(e.target.value); });
+
+        function loadTrack(i) {
+            if (i < 0 || i >= musicTracks.length) return;
+            musicIndex = i;
+            audioEl.src = musicTracks[i].url;
+            document.getElementById('npTitle').textContent = musicTracks[i].name;
+            document.getElementById('npMeta').textContent = 'Track ' + (i + 1) + ' of ' + musicTracks.length;
+            renderPlaylist(document.getElementById('playlistSearch').value);
+        }
+
+        function removeTrack(i) {
+            musicTracks.splice(i, 1);
+            if (musicIndex === i) { audioEl.pause();
+                musicIndex = -1;
+                document.getElementById('npTitle').textContent = 'No track loaded'; }
+            renderPlaylist();
+        }
+
+        function musicPlay() {
+            if (musicIndex === -1 && musicTracks.length) loadTrack(0);
+            audioEl.play().catch(function() { showToast('Playback blocked',
+                'Your browser blocked autoplay — press play again.', 'error'); });
+            document.getElementById('playBtn').textContent = '⏸';
+            document.getElementById('albumSpin').classList.add('spinning');
+            document.getElementById('eqBars').classList.add('playing');
+        }
+
+        function musicPause() {
+            audioEl.pause();
+            document.getElementById('playBtn').textContent = '▶';
+            document.getElementById('albumSpin').classList.remove('spinning');
+            document.getElementById('eqBars').classList.remove('playing');
+        }
+
+        function musicToggle() { audioEl.paused ? musicPlay() : musicPause(); }
+
+        function musicNext() {
+            if (!musicTracks.length) return;
+            const next = musicShuffle ? Math.floor(Math.random() * musicTracks.length) : (musicIndex + 1) % musicTracks
+                .length;
+            loadTrack(next);
+            musicPlay();
+        }
+
+        function musicPrev() {
+            if (!musicTracks.length) return;
+            const prev = musicShuffle ? Math.floor(Math.random() * musicTracks.length) : (musicIndex - 1 + musicTracks
+                .length) % musicTracks.length;
+            loadTrack(prev);
+            musicPlay();
+        }
+
+        function musicShuffleToggle() { musicShuffle = !musicShuffle;
+            document.getElementById('shuffleBtn').style.color = musicShuffle ? 'var(--gold)' : ''; }
+
+        function musicRepeatToggle() { musicRepeat = !musicRepeat;
+            document.getElementById('repeatBtn').style.color = musicRepeat ? 'var(--gold)' : ''; }
+        audioEl.addEventListener('ended', function() { if (musicRepeat) { audioEl.currentTime = 0;
+                audioEl.play(); } else { musicNext(); } });
+        audioEl.addEventListener('timeupdate', function() {
+            const seek = document.getElementById('seekBar');
+            if (audioEl.duration) { seek.value = (audioEl.currentTime / audioEl.duration) * 100; }
+            document.getElementById('curTime').textContent = fmtTime(audioEl.currentTime);
+            document.getElementById('durTime').textContent = fmtTime(audioEl.duration || 0);
+        });
+        document.getElementById('seekBar').addEventListener('input', function(e) {
+            if (audioEl.duration) audioEl.currentTime = (e.target.value / 100) * audioEl.duration;
+        });
+        document.getElementById('volBar').addEventListener('input', function(e) { audioEl.volume = parseFloat(e.target
+        .value); });
+        audioEl.volume = 0.8;
+
+        function fmtTime(s) { if (!isFinite(s)) return '0:00'; const m = Math.floor(s / 60),
+                sec = Math.floor(s % 60); return m + ':' + String(sec).padStart(2, '0'); }
+
+        // =====================================================================
+        // BOOT
+        // =====================================================================
+        function boot() {
+            buildNav();
+            addSubjectRow();
+            addSubjectRow();
+            updateXpUI();
+            document.documentElement.classList.toggle('reduce-motion', STATE.reduceMotion);
+            reflectInstallState();
+            navigateTo('dashboard');
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            if (STATE.onboarded) {
+                document.getElementById('onboarding').style.display = 'none';
+                document.getElementById('appShell').style.display = 'flex';
+                boot();
+            } else {
+                document.getElementById('onboarding').style.display = 'flex';
+            }
+        });
+
+        // Expose functions to global scope for onclick handlers
+        window.obGoto = obGoto;
+        window.obSubmitName = obSubmitName;
+        window.obFinish = obFinish;
+        window.navigateTo = navigateTo;
+        window.toggleSidebar = toggleSidebar;
+        window.toggleMotion = toggleMotion;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.triggerInstall = triggerInstall;
+        window.startQuiz = startQuiz;
+        window.answerQuiz = answerQuiz;
+        window.quizBack = quizBack;
+        window.quizNext = quizNext;
+        window.calcMoney = calcMoney;
+        window.genWellness = genWellness;
+        window.genRoadmap = genRoadmap;
+        window.genAdvisory = genAdvisory;
+        window.addSubjectRow = addSubjectRow;
+        window.genStudyPlan = genStudyPlan;
+        window.addRule = addRule;
+        window.pinRule = pinRule;
+        window.deleteRule = deleteRule;
+        window.editRule = editRule;
+        window.buildPersonalCode = buildPersonalCode;
+        window.musicToggle = musicToggle;
+        window.musicPlay = musicPlay;
+        window.musicNext = musicNext;
+        window.musicPrev = musicPrev;
+        window.musicShuffleToggle = musicShuffleToggle;
+        window.musicRepeatToggle = musicRepeatToggle;
+        window.loadTrack = loadTrack;
+        window.removeTrack = removeTrack;
+        window.saveProfile = saveProfile;
+        window.exportData = exportData;
+        window.resetAllData = resetAllData;
+        window.renderDashboard = renderDashboard;
+        window.renderLifeHistory = renderLifeHistory;
+        window.renderStrengths = renderStrengths;
+        window.renderRules = renderRules;
+        window.renderSettings = renderSettings;
+    })();
+</script>
+</body>
+      </html>
